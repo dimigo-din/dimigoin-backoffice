@@ -2,9 +2,9 @@
 
 import React from "react";
 import styled from "styled-components";
-import { Body, Col, Label, Row } from "../atomic";
+import { Body, Col, Label, Row, SvgContainer } from "../atomic";
 import Image from "next/image";
-import Logout from "@material-symbols/svg-300/outlined/logout-fill.svg";
+import Logout from "@material-symbols/svg-300/rounded/logout-fill.svg";
 import { Home, Run } from "../icons";
 import { Button } from "antd";
 import Link from "next/link";
@@ -26,12 +26,19 @@ const Sidebar = () => {
         </Col>
         <ListBox>
           <Col $fullw gap={"40px"}>
-            <Row $fullw align={"center"}>
+            <Row $fullw align={"center"} gap={"16px"}>
               <Col gap={"4px"} align="start" $fullw>
-                <Label color={"--basic-grade7"}>선생님/학생</Label>
+                <Label
+                  color={"--basic-grade7"}
+                  style={{ whiteSpace: "nowrap" }}
+                >
+                  선생님/학생
+                </Label>
                 <Body $strong>김디미</Body>
               </Col>
-              <Image src={Logout} alt="로그아웃" width={20} height={20} />
+              <SvgContainer $fill={"--basic-grade6"}>
+                <Logout />
+              </SvgContainer>
             </Row>
             <Col $fullw gap={"12px"}>
               <Link href={"/dashboard"}>
@@ -78,6 +85,7 @@ const Container = styled(Col)`
   position: relative;
   width: 200px;
   height: 100vh;
+
   padding: var(--spacing-550) 0;
 `;
 

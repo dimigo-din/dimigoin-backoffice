@@ -1,4 +1,5 @@
 import { styled } from "styled-components";
+import { widthAndHeight } from "../interfaces";
 import { rowColTypes } from "./interface";
 
 export const Row = styled.div<rowColTypes>`
@@ -17,6 +18,8 @@ export const Row = styled.div<rowColTypes>`
     `&>div{
     flex:1;
   }`}
+
+  ${(props) => props.$noShrink && "flex-shrink:0;"}
 `;
 
 export const Col = styled.div<rowColTypes>`
@@ -36,4 +39,17 @@ export const Col = styled.div<rowColTypes>`
     `&>div{
     flex:1;
   }`}
+
+${(props) => props.$noShrink && "flex-shrink:0;"}
+`;
+
+export const SvgContainer = styled.div<widthAndHeight & { $fill?: string }>`
+  ${(props) => (props.height ? `height: ${props.height};` : `height: 20px;`)}
+  ${(props) => (props.width ? `width: ${props.width};` : `width: 20px;`)}
+  & > svg {
+    ${(props) => props.$fill && `fill:var(${props.$fill});`}
+
+    ${(props) => (props.height ? `height: ${props.height};` : `height: 20px;`)}
+    ${(props) => (props.width ? `width: ${props.width};` : `width: 20px;`)}
+  }
 `;

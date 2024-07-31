@@ -9,6 +9,8 @@ const TypoRef = styled.div<typoType>`
 
   font-weight: ${(p) => (p.$strong ? "700" : "400")};
   padding: ${(p) => p.$padding && p.$padding};
+
+  ${(props) => props.$noShrink && "flex-shrink:0;"}
 `;
 
 export const Display = styled(TypoRef)<typoType>`

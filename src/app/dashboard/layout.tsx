@@ -19,7 +19,7 @@ export default function DashboardLayout({
       }}
     >
       <Sidebar />
-      <Col style={{ flex: 1 }} padding={"24px 0"}>
+      <Col style={{ flex: 1, height: "100vh" }} padding={"24px 0"}>
         <Indicator />
         {children}
       </Col>

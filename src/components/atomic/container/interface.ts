@@ -5,4 +5,5 @@ export interface rowColTypes extends flex, widthAndHeight {
   $fullw?: boolean; // width : 100%
   $fullh?: boolean; // height : 100%
   $flexAll?: boolean; // flex:1 to all JSX children
+  $noShrink?: boolean;
 }
