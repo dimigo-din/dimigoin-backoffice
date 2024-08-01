@@ -24,9 +24,9 @@ export default function StayPeriod() {
           gap={"12px"}
           align={"center"}
         >
-          <DatePicker />
+          <DatePicker style={{ flex: 1 }} />
           <Body $color={"--basic-grade5"}>~</Body>
-          <DatePicker />
+          <DatePicker style={{ flex: 1 }} />
         </Row>
       </Container>
     </>

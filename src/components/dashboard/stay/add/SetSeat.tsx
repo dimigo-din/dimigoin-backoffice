@@ -13,16 +13,15 @@ import { Radio } from "antd";
 
 const Seats = () => {
   const [seatData, setSeatData] = useState([]);
-  const [selectedSeats, setSelectedSeats] = useState([]);
-  const [selectedGender, setSelectedGender] = useState(null);
+  const [selectedMode, setSelectedMode] = useState(null);
 
   useEffect(() => {
     setSeatData(generateSeatData());
   }, []);
 
   const generateSeatData = () => {
-    const rows = 20;
-    const cols = 18;
+    const rows = 10;
+    const cols = 20;
     const data = [];
 
     for (let i = 0; i < rows; i++) {
@@ -31,9 +30,15 @@ const Seats = () => {
         if (i === 0 && j === 0) {
           row.push({ label: "#", status: "label" });
         } else if (i === 0) {
-          row.push({ label: j, status: "label" });
+          if (j === 10) {
+            row.push({ label: "", status: "aisle" });
+          } else {
+            row.push({ label: j > 10 ? j - 1 : j, status: "label" });
+          }
         } else if (j === 0) {
           row.push({ label: String.fromCharCode(64 + i), status: "label" });
+        } else if (j === 10) {
+          row.push({ label: "", status: "aisle" });
         } else {
           const isUnavailable = Math.random() < 0.1;
           row.push({
@@ -49,15 +54,36 @@ const Seats = () => {
   };
 
   const handleSeatClick = (rowIndex, colIndex) => {
-    if (rowIndex === 0 || colIndex === 0) return; // 레이블 클릭 방지
+    if (rowIndex === 0 || colIndex === 0 || colIndex === 10) return;
     const seat = seatData[rowIndex][colIndex];
-    if (seat.status === "available") {
-      const newSeatData = [...seatData];
-      newSeatData[rowIndex][colIndex].status =
-        selectedGender === "male" ? "selectedMale" : "selectedFemale";
-      setSeatData(newSeatData);
-      setSelectedSeats([...selectedSeats, { row: rowIndex, col: colIndex }]);
+    const newSeatData = [...seatData];
+
+    switch (selectedMode) {
+      case "male":
+        if (seat.status === "available" || seat.status === "selectedFemale") {
+          newSeatData[rowIndex][colIndex].status = "selectedMale";
+        }
+        break;
+      case "female":
+        if (seat.status === "available" || seat.status === "selectedMale") {
+          newSeatData[rowIndex][colIndex].status = "selectedFemale";
+        }
+        break;
+      case "block":
+        if (seat.status !== "unavailable") {
+          newSeatData[rowIndex][colIndex].status = "unavailable";
+        }
+        break;
+      case "unblock":
+        if (seat.status !== "available") {
+          newSeatData[rowIndex][colIndex].status = "available";
+        }
+        break;
+      default:
+        return;
     }
+
+    setSeatData(newSeatData);
   };
 
   return (
@@ -69,15 +95,15 @@ const Seats = () => {
         <LegendRow>
           <LegendItem>
             <Circle $color={"--basic-grade3"} />
-            <Body $color={"--basic-grade6"}>잔여 좌석</Body>
+            <Body $color={"--basic-grade6"}>빈 좌석</Body>
           </LegendItem>
           <LegendItem>
-            <Circle $color={"--basic-grade6"} />
-            <Body $color={"--basic-grade6"}>예약된 좌석</Body>
+            <Circle $color={"--solid-blue"} />
+            <Body $color={"--basic-grade6"}>남자</Body>
           </LegendItem>
           <LegendItem>
             <Circle $color={"--core-status-accent"} />
-            <Body $color={"--basic-grade6"}>선택한 좌석</Body>
+            <Body $color={"--basic-grade6"}>여자</Body>
           </LegendItem>
         </LegendRow>
       </HeaderRow>
@@ -88,28 +114,25 @@ const Seats = () => {
               {seatData.map((row, rowIndex) => (
                 <SeatRow key={rowIndex}>
                   {row.map((seat, colIndex) => (
-                    <>
-                      <SeatCell
-                        key={`${rowIndex}-${colIndex}`}
-                        status={seat.status}
-                        onClick={() => handleSeatClick(rowIndex, colIndex)}
-                        isHeader={rowIndex === 0 || colIndex === 0}
-                      >
-                        {seat.status === "unavailable" ? (
-                          <>
-                            <SvgContainer
-                              $fill="--basic-grade5"
-                              width={"16px"}
-                              height={"16px"}
-                            >
-                              <Close />
-                            </SvgContainer>
-                          </>
-                        ) : (
-                          <>{seat.label}</>
-                        )}
-                      </SeatCell>
-                    </>
+                    <SeatCell
+                      key={`${rowIndex}-${colIndex}`}
+                      status={seat.status}
+                      onClick={() => handleSeatClick(rowIndex, colIndex)}
+                      isHeader={rowIndex === 0 || colIndex === 0}
+                      isAisle={colIndex === 10}
+                    >
+                      {seat.status === "unavailable" ? (
+                        <SvgContainer
+                          $fill="--basic-grade5"
+                          width={"16px"}
+                          height={"16px"}
+                        >
+                          <Close />
+                        </SvgContainer>
+                      ) : (
+                        seat.label
+                      )}
+                    </SeatCell>
                   ))}
                 </SeatRow>
               ))}
@@ -117,21 +140,64 @@ const Seats = () => {
           </SeatBox>
         </LeftSection>
         <RightSection>
-          <Col>
-            <Row>
-              <Option>
-                <Row gap={"16px"}>
-                  <Col gap={"8px"}>
-                    <Body $color={"--basic-grade8"} $strong>
-                      남자
-                    </Body>
-                    <Body $color={"--basic-grade5"}>남자</Body>
-                  </Col>
-                  <Radio />
-                </Row>
-              </Option>
-            </Row>
-          </Col>
+          <OptionGrid>
+            <Option>
+              <Row gap={"16px"} justify={"space-between"}>
+                <Col gap={"8px"}>
+                  <Body $color={"--basic-grade8"} $strong>
+                    남자
+                  </Body>
+                  <Body $color={"--basic-grade5"}>남자 좌석 선택</Body>
+                </Col>
+                <Radio
+                  checked={selectedMode === "male"}
+                  onChange={() => setSelectedMode("male")}
+                />
+              </Row>
+            </Option>
+            <Option>
+              <Row gap={"16px"} justify={"space-between"}>
+                <Col gap={"8px"}>
+                  <Body $color={"--basic-grade8"} $strong>
+                    여자
+                  </Body>
+                  <Body $color={"--basic-grade5"}>여자 좌석 선택</Body>
+                </Col>
+                <Radio
+                  checked={selectedMode === "female"}
+                  onChange={() => setSelectedMode("female")}
+                />
+              </Row>
+            </Option>
+            <Option>
+              <Row gap={"16px"} justify={"space-between"}>
+                <Col gap={"8px"}>
+                  <Body $color={"--basic-grade8"} $strong>
+                    좌석 차단
+                  </Body>
+                  <Body $color={"--basic-grade5"}>좌석 사용 불가 설정</Body>
+                </Col>
+                <Radio
+                  checked={selectedMode === "block"}
+                  onChange={() => setSelectedMode("block")}
+                />
+              </Row>
+            </Option>
+            <Option>
+              <Row gap={"16px"} justify={"space-between"}>
+                <Col gap={"8px"}>
+                  <Body $color={"--basic-grade8"} $strong>
+                    좌석 해제
+                  </Body>
+                  <Body $color={"--basic-grade5"}>모든 설정 해제</Body>
+                </Col>
+                <Radio
+                  checked={selectedMode === "unblock"}
+                  onChange={() => setSelectedMode("unblock")}
+                />
+              </Row>
+            </Option>
+          </OptionGrid>
         </RightSection>
       </Row>
     </Container>
@@ -150,18 +216,24 @@ const SeatBox = styled.div`
   border-radius: 12px;
   border: 1px solid #ebecf5;
   padding: 20px;
+  overflow-x: auto;
 `;
 
 const SeatGrid = styled.div`
-  display: flex;
-  flex-direction: column;
+  display: inline-block;
+  white-space: nowrap;
 `;
 
 const SeatRow = styled.div`
   display: flex;
 `;
-
-const SeatCell = styled.div`
+interface SeatCellProps {
+  status: string;
+  isHeader: boolean;
+  isAisle: boolean;
+  onClick: () => void;
+}
+const SeatCell = styled.div<SeatCellProps>`
   width: 20px;
   height: 20px;
   display: flex;
@@ -170,10 +242,10 @@ const SeatCell = styled.div`
   border-radius: 4px;
   font-size: 12px;
   margin: 2px;
-  cursor: ${({ isHeader, status }) =>
-    isHeader || status === "unavailable" ? "default" : "pointer"};
-  background-color: ${({ status, isHeader }) => {
-    if (isHeader) return "transparent";
+  cursor: ${({ isHeader, status, isAisle }) =>
+    isHeader || status === "unavailable" || isAisle ? "default" : "pointer"};
+  background-color: ${({ status, isHeader, isAisle }) => {
+    if (isHeader || isAisle) return "transparent";
     switch (status) {
       case "available":
         return "#e0e0e0";
@@ -210,10 +282,6 @@ const RightSection = styled.div`
   flex: 1;
 `;
 
-const Label = styled.label`
-  font-size: 14px;
-`;
-
 const HeaderRow = styled(Row)`
   padding: 20px 28px;
   justify-content: space-between;
@@ -232,9 +300,16 @@ const LegendItem = styled(Row)`
   align-items: center;
 `;
 
+const OptionGrid = styled.div`
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+`;
+
 const Option = styled.div`
   background-color: var(--basic-grade2);
   border-radius: 12px;
   padding: 20px;
 `;
+
 export default Seats;

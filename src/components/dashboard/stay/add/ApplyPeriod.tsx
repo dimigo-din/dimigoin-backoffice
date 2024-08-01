@@ -22,9 +22,9 @@ export default function ApplyPeriod() {
               1학년
             </Body>
             <Row gap={"12px"} align={"center"}>
-              <DatePicker />
+              <DatePicker style={{ flex: 1 }} />
               <Body $color={"--basic-grade5"}>~</Body>
-              <DatePicker />
+              <DatePicker style={{ flex: 1 }} />
             </Row>
           </Col>
           <Col gap={"16px"}>
@@ -32,9 +32,9 @@ export default function ApplyPeriod() {
               2학년
             </Body>
             <Row gap={"12px"} align={"center"}>
-              <DatePicker />
+              <DatePicker style={{ flex: 1 }} />
               <Body $color={"--basic-grade5"}>~</Body>
-              <DatePicker />
+              <DatePicker style={{ flex: 1 }} />
             </Row>
           </Col>
           <Col gap={"16px"}>
@@ -42,9 +42,9 @@ export default function ApplyPeriod() {
               3학년
             </Body>
             <Row gap={"12px"} align={"center"}>
-              <DatePicker />
+              <DatePicker style={{ flex: 1 }} />
               <Body $color={"--basic-grade5"}>~</Body>
-              <DatePicker />
+              <DatePicker style={{ flex: 1 }} />
             </Row>
           </Col>
         </Col>

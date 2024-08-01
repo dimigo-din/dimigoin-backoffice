@@ -14,8 +14,6 @@ import locale from "antd/lib/locale/ko_KR";
 
 moment.locale("ko");
 
-const inter = Inter({ subsets: ["latin"] });
-
 export const metadata: Metadata = {
   title: "디미고인",
   description: "디미고인 백오피스",
@@ -28,7 +26,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={inter.className}>
+      <body>
         <StyledComponentsRegistry>
           <AntdRegistry>
             <ConfigProvider
@@ -45,6 +43,8 @@ export default function RootLayout({
                   DatePicker: {
                     paddingBlock: 16,
                     paddingInline: 20,
+                    borderRadius: 12,
+                    lineHeight: 2.5,
                   },
                 },
               }}

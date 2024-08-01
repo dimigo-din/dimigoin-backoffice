@@ -42,6 +42,7 @@ export default function Indicator() {
                     path.length - 1 === i ? "--basic-grade9" : "-basic-grade7"
                   }
                   $strong={path.length - 1 === i}
+                  style={{ whiteSpace: "nowrap" }}
                 >
                   {elm}
                 </Heading>

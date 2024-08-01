@@ -13,11 +13,11 @@ export default function ApplyOuting() {
           align={"center"}
         >
           <Heading $strong $color={"--basic-grade9"}>
-            신청 기간
+            외출 관리
           </Heading>
         </Row>
         <Col padding={"0px 24px 24px 24px"} gap={"12px"}>
-          <Row gap={"12px"}>
+          <Row gap={"12px"} $flexAll>
             <Option>
               <Col padding={"24px"} gap={"12px"}>
                 <Row align={"center"} justify={"space-between"} gap={"12px"}>
@@ -47,7 +47,7 @@ export default function ApplyOuting() {
               </Col>
             </Option>
           </Row>
-          <Row gap={"12px"}>
+          <Row gap={"12px"} $flexAll>
             <Option>
               <Col padding={"24px"} gap={"12px"}>
                 <Row align={"center"} justify={"space-between"} gap={"12px"}>
@@ -77,7 +77,7 @@ export default function ApplyOuting() {
               </Col>
             </Option>
           </Row>
-          <Row gap={"12px"}>
+          <Row gap={"12px"} $flexAll>
             <Option>
               <Col padding={"24px"} gap={"12px"}>
                 <Row align={"center"} justify={"space-between"} gap={"12px"}>
