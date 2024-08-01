@@ -60,10 +60,10 @@ const Sidebar = () => {
               <Link href={"/dashboard/stay"}>
                 <Button style={{ border: "none", width: "100%", padding: 0 }}>
                   <Row $fullw gap={"12px"}>
-                    <Run $activated={pathname === "/dashboard/stay"} />
+                    <Run $activated={pathname.includes("/stay")} />
                     <Label
                       $color={
-                        pathname === "/dashboard/stay"
+                        pathname.includes("/stay")
                           ? "--core-status-accent"
                           : "--basic-grade7"
                       }

@@ -79,29 +79,29 @@ const Seats = () => {
         <Heading $strong color={"--basic-grade9"}>
           잔류 좌석 현황
         </Heading>
-        <Row gap={"16px"} align={"center"}>
-          <Row gap={"8px"} align={"center"}>
+        <LegendRow>
+          <LegendItem>
             <Circle $color={"--basic-grade3"} />
             <Body $color={"--basic-grade6"}>잔여 좌석</Body>
-          </Row>
-          <Row gap={"8px"} align={"center"}>
+          </LegendItem>
+          <LegendItem>
             <Circle $color={"--basic-grade6"} />
             <Body $color={"--basic-grade6"}>예약된 좌석</Body>
-          </Row>
-          <Row gap={"8px"} align={"center"}>
+          </LegendItem>
+          <LegendItem>
             <Circle $color={"--core-status-accent"} />
             <Body $color={"--basic-grade6"}>선택한 좌석</Body>
-          </Row>
-        </Row>
+          </LegendItem>
+        </LegendRow>
       </HeaderRow>
       <ScrollableContent>
-        <Col gap={"2px"}>
-          {seatData.map((row: string[], idx: number) => (
-            <>
-              <Row gap={"2px"}>
-                {row.map((seat: any, seatIdx: number) => (
-                  <>
-                    <Seat key={idx - seatIdx} status={seat.status}>
+        <ScrollableHorizontal>
+          <SeatGrid>
+            {seatData.map((row: any[], idx: any) => (
+              <Row key={idx}>
+                {row.map(
+                  (seat: { status: string; label: any }, seatIdx: any) => (
+                    <Seat key={`${idx}-${seatIdx}`} status={seat.status}>
                       {seat.status === "unavailable" ? (
                         <SvgContainer
                           $fill="--basic-grade5"
@@ -111,55 +111,27 @@ const Seats = () => {
                           <Close />
                         </SvgContainer>
                       ) : (
-                        <>
-                          <FootNote
-                            $color={
-                              seat.status === "reserved"
-                                ? "--basic-grade1"
-                                : "--basic-grade7"
-                            }
-                            style={{
-                              letterSpacing: "-0.12px",
-                              lineHeight: "14px",
-                            }}
-                          >
-                            {seat.label}
-                          </FootNote>
-                        </>
+                        <FootNote
+                          $color={
+                            seat.status === "reserved"
+                              ? "--basic-grade1"
+                              : "--basic-grade7"
+                          }
+                          style={{
+                            letterSpacing: "-0.12px",
+                            lineHeight: "14px",
+                          }}
+                        >
+                          {seat.label}
+                        </FootNote>
                       )}
                     </Seat>
-                  </>
-                ))}
+                  )
+                )}
               </Row>
-            </>
-          ))}
-
-          {/* <TableContainer>
-            <ColLabels>
-              <EmptyCell />
-              {Array.from({ length: 10 }, (_, i) => (
-                <ColLabel key={i}>{i + 1}</ColLabel>
-              ))}
-              <AisleLabel>복도</AisleLabel>
-              {Array.from({ length: 10 }, (_, i) => (
-                <ColLabel key={i + 11}>{i + 11}</ColLabel>
-              ))}
-            </ColLabels>
-            <SeatGrid>
-              {seatData.map((row, rowIndex) => (
-                <SeatRow key={rowIndex}>
-                  <RowLabel>{String.fromCharCode(65 + rowIndex)}</RowLabel>
-                  {row.map((seat, colIndex) => (
-                    <React.Fragment key={`${rowIndex}-${colIndex}`}>
-                      <Seat status={seat.status}>{seat.label}</Seat>
-                      {colIndex === 9 && <Aisle />}
-                    </React.Fragment>
-                  ))}
-                </SeatRow>
-              ))}
-            </SeatGrid>
-          </TableContainer> */}
-        </Col>
+            ))}
+          </SeatGrid>
+        </ScrollableHorizontal>
       </ScrollableContent>
     </Container>
   );
@@ -181,34 +153,55 @@ const HeaderRow = styled(Row)`
   padding: 20px 28px;
   justify-content: space-between;
   align-items: center;
+  flex-wrap: wrap;
+`;
+
+const LegendRow = styled(Row)`
+  gap: 16px;
+  align-items: center;
+  flex-wrap: wrap;
+`;
+
+const LegendItem = styled(Row)`
+  gap: 8px;
+  align-items: center;
 `;
 
 const ScrollableContent = styled.div`
   flex: 1;
   overflow-y: auto;
-  padding: 0 32px 32px 32px;
-  margin-bottom: 12px;
+  padding: 0 32px 0px 32px;
+  margin-bottom: 16px;
+`;
+
+const ScrollableHorizontal = styled.div`
+  overflow-x: auto;
+  width: 100%;
+`;
+
+const SeatGrid = styled.div`
+  display: inline-block;
+  white-space: nowrap;
 `;
 
 const Seat = styled.div<{ status: string }>`
+  display: inline-flex;
   width: 50px;
   height: 35px;
   margin: 2px;
-  display: flex;
   align-items: center;
-  justify-content: ${(props) =>
+  justify-content: ${(props: { status: string }) =>
     props.status === "leftLabel" ? "left" : "center"};
   font-size: 12px;
   border-radius: 4px;
   cursor: pointer;
-  background-color: ${(props) =>
+  background-color: ${(props: { status: string }) =>
     props.status === "available"
       ? "var(--basic-grade3)"
       : props.status === "reserved"
       ? "var(--basic-grade6)"
       : "transparent"};
-
-  border: ${(props) =>
+  border: ${(props: { status: string }) =>
     props.status === "unavailable" ? "1px solid var(--basic-grade3)" : "none"};
   white-space: pre-wrap;
   text-align: center;

@@ -3,6 +3,7 @@ import { Button, Switch } from "antd";
 import styled from "styled-components";
 import { toast } from "react-toastify";
 import Add from "@material-symbols/svg-300/rounded/add.svg";
+import Link from "next/link";
 
 const StayList = () => {
   return (
@@ -11,21 +12,23 @@ const StayList = () => {
         <Heading $strong color={"--basic-grade9"}>
           잔류 목록
         </Heading>
-        <Button
-          size="large"
-          style={{
-            borderRadius: "20px",
-            border: "none",
-            backgroundColor: "#F6F7FA",
-          }}
-        >
-          <Row align={"center"} gap={"4px"}>
-            <Body $color={"--basic-grade7"}>잔류 추가</Body>
-            <SvgContainer $fill={"--basic-grade7"}>
-              <Add />
-            </SvgContainer>
-          </Row>
-        </Button>
+        <Link href={"/dashboard/stay/add"}>
+          <Button
+            size="large"
+            style={{
+              borderRadius: "20px",
+              border: "none",
+              backgroundColor: "#F6F7FA",
+            }}
+          >
+            <Row align={"center"} gap={"4px"}>
+              <Body $color={"--basic-grade7"}>잔류 추가</Body>
+              <SvgContainer $fill={"--basic-grade7"}>
+                <Add />
+              </SvgContainer>
+            </Row>
+          </Button>
+        </Link>
       </Header>
       <ScrollableDataList>
         {[...Array(4)].map((_, index) => (

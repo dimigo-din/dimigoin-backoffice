@@ -7,7 +7,13 @@ import React from "react";
 import { AntdRegistry } from "@ant-design/nextjs-registry";
 import { ConfigProvider } from "antd";
 import { ToastContainer } from "react-toastify";
-import styled from "styled-components";
+
+import moment from "moment";
+import "moment/locale/ko";
+import locale from "antd/lib/locale/ko_KR";
+
+moment.locale("ko");
+
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
@@ -32,8 +38,17 @@ export default function RootLayout({
                     colorPrimary: "#E83C77",
                     colorPrimaryHover: "#E83C77EE",
                   },
+                  Radio: {
+                    buttonCheckedBg: "#E83C77",
+                    buttonBg: "#E83C77",
+                  },
+                  DatePicker: {
+                    paddingBlock: 16,
+                    paddingInline: 20,
+                  },
                 },
               }}
+              locale={locale}
             >
               <ToastContainer
                 position="top-right" // 알람 위치 지정
