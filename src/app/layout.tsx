@@ -37,14 +37,29 @@ export default function RootLayout({
                     colorPrimaryHover: "#E83C77EE",
                   },
                   Radio: {
-                    buttonCheckedBg: "#E83C77",
-                    buttonBg: "#E83C77",
+                    colorBorder: "var(--basic-grade4)",
+                    colorPrimary: "var(--core-status-accent)",
                   },
                   DatePicker: {
                     paddingBlock: 16,
                     paddingInline: 20,
                     borderRadius: 12,
                     lineHeight: 2.5,
+                  },
+                  Input: {
+                    paddingBlock: 16,
+                    paddingInline: 20,
+                    borderRadius: 12,
+                  },
+                  Button: {
+                    borderRadius: 8,
+                    defaultBorderColor: "none",
+                  },
+                  Checkbox: {
+                    colorBorder: "var(--basic-grade4)",
+                    colorPrimary: "var(--core-status-accent)",
+
+                    colorPrimaryHover: "var(--core-status-accent)",
                   },
                 },
               }}

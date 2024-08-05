@@ -15,7 +15,7 @@ export const Row = styled.div<rowColTypes>`
 
   ${(props) =>
     props.$flexAll &&
-    `&>div{
+    `&>*{
     flex:1;
   }`}
 

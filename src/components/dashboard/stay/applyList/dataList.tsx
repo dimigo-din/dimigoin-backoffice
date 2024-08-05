@@ -8,9 +8,8 @@ const DataList = () => {
         <Row padding={"20px"}>
           <Col
             align={"start"}
-            justify={"space-between"}
             $noShrink
-            style={{ width: "120px", marginRight: "24px" }}
+            style={{ width: "65px", marginRight: "24px" }}
           >
             <Body $color={"--basic-grade6"}>2학년 4반</Body>
             <Body $strong $color={"--basic-grade7"}>
@@ -33,9 +32,8 @@ const DataList = () => {
         <Row padding={"20px"}>
           <Col
             align={"start"}
-            justify={"space-between"}
             $noShrink
-            style={{ width: "120px", marginRight: "24px" }}
+            style={{ width: "65px", marginRight: "24px" }}
           >
             <Body $color={"--basic-grade6"}>2학년 4반</Body>
             <Body $strong $color={"--basic-grade7"}>
@@ -65,9 +63,8 @@ const DataList = () => {
         <Row padding={"20px"}>
           <Col
             align={"start"}
-            justify={"space-between"}
             $noShrink
-            style={{ width: "120px", marginRight: "24px" }}
+            style={{ width: "65px", marginRight: "24px" }}
           >
             <Body $color={"--basic-grade6"}>2학년 4반</Body>
             <Body $strong $color={"--basic-grade7"}>

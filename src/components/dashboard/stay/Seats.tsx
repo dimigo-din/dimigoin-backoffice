@@ -10,6 +10,7 @@ import {
 } from "@/components/atomic/index";
 import Close from "@material-symbols/svg-300/rounded/close.svg";
 import styled from "styled-components";
+import Link from "next/link";
 const generateSeatData = () => {
   const rows = 10;
   const cols = 20;
@@ -101,31 +102,34 @@ const Seats = () => {
               <Row key={idx}>
                 {row.map(
                   (seat: { status: string; label: any }, seatIdx: any) => (
-                    <Seat key={`${idx}-${seatIdx}`} status={seat.status}>
-                      {seat.status === "unavailable" ? (
-                        <SvgContainer
-                          $fill="--basic-grade5"
-                          width={"24px"}
-                          height={"24px"}
-                        >
-                          <Close />
-                        </SvgContainer>
-                      ) : (
-                        <FootNote
-                          $color={
-                            seat.status === "reserved"
-                              ? "--basic-grade1"
-                              : "--basic-grade7"
-                          }
-                          style={{
-                            letterSpacing: "-0.12px",
-                            lineHeight: "14px",
-                          }}
-                        >
-                          {seat.label}
-                        </FootNote>
-                      )}
-                    </Seat>
+                    <Link href="/dashboard/stay/manage">
+                      {/* ^^ test ^^, /dashboard/stay/manage/[name] */}
+                      <Seat key={`${idx}-${seatIdx}`} status={seat.status}>
+                        {seat.status === "unavailable" ? (
+                          <SvgContainer
+                            $fill="--basic-grade5"
+                            width={"24px"}
+                            height={"24px"}
+                          >
+                            <Close />
+                          </SvgContainer>
+                        ) : (
+                          <FootNote
+                            $color={
+                              seat.status === "reserved"
+                                ? "--basic-grade1"
+                                : "--basic-grade7"
+                            }
+                            style={{
+                              letterSpacing: "-0.12px",
+                              lineHeight: "14px",
+                            }}
+                          >
+                            {seat.label}
+                          </FootNote>
+                        )}
+                      </Seat>
+                    </Link>
                   )
                 )}
               </Row>
