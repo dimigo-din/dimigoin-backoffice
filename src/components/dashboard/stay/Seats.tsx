@@ -102,9 +102,12 @@ const Seats = () => {
               <Row key={idx}>
                 {row.map(
                   (seat: { status: string; label: any }, seatIdx: any) => (
-                    <Link href="/dashboard/stay/manage">
+                    <Link
+                      href="/dashboard/stay/manage"
+                      key={`${idx}-${seatIdx}`}
+                    >
                       {/* ^^ test ^^, /dashboard/stay/manage/[name] */}
-                      <Seat key={`${idx}-${seatIdx}`} status={seat.status}>
+                      <Seat status={seat.status}>
                         {seat.status === "unavailable" ? (
                           <SvgContainer
                             $fill="--basic-grade5"
