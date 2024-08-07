@@ -57,7 +57,7 @@ const generateSeatData = () => {
       } else if (Math.random() < 0.1) {
         row.push({ label: "", status: "unavailable" });
       } else if (Math.random() < 0.3) {
-        row.push({ label: "1234\n조현우", status: "reserved" });
+        row.push({ label: "1234\n홍길동", status: "reserved" });
       } else {
         row.push({ label: "1", status: "available" });
       }

@@ -83,9 +83,11 @@ export default function TimeTableOptionComponent({ name }: { name: string }) {
                 </Row>
               </Row>
               <Row gap={"20px"} align={"center"}>
-                <Body $color={"--basic-grade7"} $noShrink>
-                  1타임
-                </Body>
+                <FixedWidthLabel>
+                  <Body $color={"--basic-grade7"} $noShrink>
+                    1타임
+                  </Body>
+                </FixedWidthLabel>
                 <InputWithIcon>
                   <Input
                     placeholder="시작 일시"
@@ -99,9 +101,11 @@ export default function TimeTableOptionComponent({ name }: { name: string }) {
                 </InputWithIcon>
               </Row>
               <Row gap={"20px"} align={"center"}>
-                <Body $color={"--basic-grade7"} $noShrink>
-                  2타임
-                </Body>
+                <FixedWidthLabel>
+                  <Body $color={"--basic-grade7"} $noShrink>
+                    2타임
+                  </Body>
+                </FixedWidthLabel>
                 <InputWithIcon>
                   <Input
                     placeholder="시작 일시"
@@ -141,4 +145,9 @@ const IconWrapper = styled.div`
   display: flex;
   align-items: center;
   pointer-events: none;
+`;
+
+const FixedWidthLabel = styled.div`
+  width: 40px;
+  flex-shrink: 0;
 `;

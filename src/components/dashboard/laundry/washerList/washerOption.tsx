@@ -2,24 +2,25 @@ import { Body, SvgContainer } from "@/components/atomic";
 import { Row } from "@/components/atomic";
 import styled from "styled-components";
 import Arrow from "@material-symbols/svg-300/rounded/chevron_right.svg";
-import { useState } from "react";
 
 interface WasherOptionProps {
   name: string;
   isSelected: boolean;
+  isOpen: boolean;
   onSelect: () => void;
+  onToggleOpen: () => void;
 }
 
 export default function WasherOption({
   name,
   isSelected,
+  isOpen,
   onSelect,
+  onToggleOpen,
 }: WasherOptionProps) {
-  const [open, setOpen] = useState<boolean>(false);
-
   const handleClick = () => {
-    setOpen((prev) => !prev);
     onSelect();
+    onToggleOpen();
   };
 
   return (
@@ -42,12 +43,12 @@ export default function WasherOption({
             width={"20px"}
             height={"20px"}
             $fill={isSelected ? "--basic-grade1" : "--basic-grade7"}
-            $rotate={open ? "180" : "90"}
+            $rotate={isOpen ? "180" : "90"}
           >
             <Arrow />
           </SvgContainer>
         </Row>
-        {open && <></>}
+        {isOpen && <></>}
       </LaundryContainer>
     </>
   );

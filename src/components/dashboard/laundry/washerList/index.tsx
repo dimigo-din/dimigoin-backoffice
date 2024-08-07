@@ -16,6 +16,7 @@ export default function WasherList({
   setSelectedWasher,
 }: WasherListProps) {
   const [location, setLocation] = useState<"학봉관" | "우정학사">("학봉관");
+  const [openWasher, setOpenWasher] = useState<string | null>(null);
   const washers = [
     "2층 왼쪽 세탁기",
     "3층 왼쪽 세탁기",
@@ -29,6 +30,10 @@ export default function WasherList({
     } else {
       setSelectedWasher(washer);
     }
+  };
+
+  const handleToggleOpen = (washer: string) => {
+    setOpenWasher(openWasher === washer ? null : washer);
   };
 
   return (
@@ -93,7 +98,9 @@ export default function WasherList({
                 key={washer}
                 name={washer}
                 isSelected={selectedWasher === washer}
+                isOpen={openWasher === washer}
                 onSelect={() => handleWasherSelect(washer)}
+                onToggleOpen={() => handleToggleOpen(washer)}
               />
             ))}
             <WasherAdd />
