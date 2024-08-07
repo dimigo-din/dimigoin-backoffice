@@ -9,23 +9,30 @@ import {
 import React, { useState, useEffect } from "react";
 import styled from "styled-components";
 import Close from "@material-symbols/svg-300/rounded/close.svg";
-import { Radio } from "antd";
+import { Radio, RadioChangeEvent } from "antd";
 
-const Seats = () => {
-  const [seatData, setSeatData] = useState([]);
-  const [selectedMode, setSelectedMode] = useState(null);
+interface SeatData {
+  label: string;
+  status: string;
+}
+
+type SeatMode = "male" | "female" | "block" | "unblock" | null;
+
+const Seats: React.FC = () => {
+  const [seatData, setSeatData] = useState<SeatData[][]>([]);
+  const [selectedMode, setSelectedMode] = useState<SeatMode>(null);
 
   useEffect(() => {
     setSeatData(generateSeatData());
   }, []);
 
-  const generateSeatData = () => {
+  const generateSeatData = (): SeatData[][] => {
     const rows = 10;
     const cols = 20;
-    const data = [];
+    const data: SeatData[][] = [];
 
     for (let i = 0; i < rows; i++) {
-      const row = [];
+      const row: SeatData[] = [];
       for (let j = 0; j < cols; j++) {
         if (i === 0 && j === 0) {
           row.push({ label: "#", status: "label" });
@@ -33,7 +40,10 @@ const Seats = () => {
           if (j === 10) {
             row.push({ label: "", status: "aisle" });
           } else {
-            row.push({ label: j > 10 ? j - 1 : j, status: "label" });
+            row.push({
+              label: j > 10 ? (j - 1).toString() : j.toString(),
+              status: "label",
+            });
           }
         } else if (j === 0) {
           row.push({ label: String.fromCharCode(64 + i), status: "label" });
@@ -53,7 +63,7 @@ const Seats = () => {
     return data;
   };
 
-  const handleSeatClick = (rowIndex, colIndex) => {
+  const handleSeatClick = (rowIndex: number, colIndex: number): void => {
     if (rowIndex === 0 || colIndex === 0 || colIndex === 10) return;
     const seat = seatData[rowIndex][colIndex];
     const newSeatData = [...seatData];
@@ -227,12 +237,14 @@ const SeatGrid = styled.div`
 const SeatRow = styled.div`
   display: flex;
 `;
+
 interface SeatCellProps {
   status: string;
   isHeader: boolean;
   isAisle: boolean;
   onClick: () => void;
 }
+
 const SeatCell = styled.div<SeatCellProps>`
   width: 20px;
   height: 20px;

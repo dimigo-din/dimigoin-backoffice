@@ -3,4 +3,5 @@ export const pathDict: { [key: string]: string } = {
   dashboard: "홈",
   add: "잔류 추가",
   manage: "잔류 신청 관리",
+  laundry: "세탁 관리",
 };

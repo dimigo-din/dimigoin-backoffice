@@ -5,10 +5,19 @@ import styled from "styled-components";
 import { Body, Col, Label, Row, SvgContainer } from "../atomic";
 import Image from "next/image";
 import Logout from "@material-symbols/svg-300/rounded/logout-fill.svg";
-import { Home, Run } from "../icons";
+import LocalLaundryService from "@material-symbols/svg-300/rounded/local_laundry_service.svg";
+import Home from "@material-symbols/svg-300/rounded/home.svg";
+import Run from "@material-symbols/svg-300/rounded/directions_run.svg";
 import { Button } from "antd";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+
+function getIconColor(pathname: string, key: string, exact?: boolean): string {
+  return (exact ? pathname === "/" + key : pathname.includes("/" + key))
+    ? "--core-status-accent"
+    : "--basic-grade7";
+}
+
 const Sidebar = () => {
   const pathname = usePathname();
   return (
@@ -44,14 +53,14 @@ const Sidebar = () => {
               <Link href={"/dashboard"}>
                 <Button style={{ border: "none", width: "100%", padding: 0 }}>
                   <Row $fullw gap={"12px"}>
-                    <Home $activated={pathname === "/dashboard"} />
-                    <Label
-                      $color={
-                        pathname === "/dashboard"
-                          ? "--core-status-accent"
-                          : "--basic-grade7"
-                      }
+                    <SvgContainer
+                      $fill={getIconColor(pathname, "dashboard", true)}
+                      width={"20px"}
+                      height={"20px"}
                     >
+                      <Home />
+                    </SvgContainer>
+                    <Label $color={getIconColor(pathname, "dashboard", true)}>
                       홈
                     </Label>
                   </Row>
@@ -60,15 +69,31 @@ const Sidebar = () => {
               <Link href={"/dashboard/stay"}>
                 <Button style={{ border: "none", width: "100%", padding: 0 }}>
                   <Row $fullw gap={"12px"}>
-                    <Run $activated={pathname.includes("/stay")} />
-                    <Label
-                      $color={
-                        pathname.includes("/stay")
-                          ? "--core-status-accent"
-                          : "--basic-grade7"
-                      }
+                    <SvgContainer
+                      $fill={getIconColor(pathname, "stay")}
+                      width={"20px"}
+                      height={"20px"}
                     >
+                      <Run />
+                    </SvgContainer>
+                    <Label $color={getIconColor(pathname, "stay")}>
                       잔류 관리
+                    </Label>
+                  </Row>
+                </Button>
+              </Link>
+              <Link href={"/dashboard/laundry"}>
+                <Button style={{ border: "none", width: "100%", padding: 0 }}>
+                  <Row $fullw gap={"12px"}>
+                    <SvgContainer
+                      $fill={getIconColor(pathname, "laundry")}
+                      width={"20px"}
+                      height={"20px"}
+                    >
+                      <LocalLaundryService />
+                    </SvgContainer>
+                    <Label $color={getIconColor(pathname, "laundry")}>
+                      세탁 관리
                     </Label>
                   </Row>
                 </Button>

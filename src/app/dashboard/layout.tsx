@@ -2,6 +2,7 @@
 import Sidebar from "@/components/Home/Sidebar";
 import { Col } from "@/components/atomic";
 import Indicator from "@/components/dashboard/indicator";
+import { styled } from "styled-components";
 
 export default function DashboardLayout({
   children,
@@ -9,15 +10,7 @@ export default function DashboardLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <div
-      style={{
-        display: "flex",
-        gap: "24px",
-        maxWidth: "80vw",
-        minHeight: "100vh",
-        margin: "auto",
-      }}
-    >
+    <Container>
       <Sidebar />
       <Col
         style={{ flex: 1, height: "100vh", overflow: "hidden" }}
@@ -26,6 +19,14 @@ export default function DashboardLayout({
         <Indicator />
         {children}
       </Col>
-    </div>
+    </Container>
   );
 }
+
+const Container = styled.div`
+  display: flex;
+  gap: 24px;
+  max-width: 80vw;
+  min-height: 100vh;
+  margin: auto;
+`;

@@ -10,7 +10,7 @@ const TypoRef = styled.div<typoType>`
   font-weight: ${(p) => (p.$strong ? "700" : "400")};
   padding: ${(p) => p.$padding && p.$padding};
 
-  transition: 0.5s all ease-out;
+  transition: 0.2s all ease-out;
 
   ${(props) => props.$noShrink && "flex-shrink:0;"}
 `;
