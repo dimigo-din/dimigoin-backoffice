@@ -11,6 +11,7 @@ import Run from "@material-symbols/svg-300/rounded/directions_run.svg";
 import { Button } from "antd";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { logout } from "@/lib/api/auth";
 
 function getIconColor(pathname: string, key: string, exact?: boolean): string {
   return (exact ? pathname === "/" + key : pathname.includes("/" + key))
@@ -45,7 +46,11 @@ const Sidebar = () => {
                 </Label>
                 <Body $strong>김디미</Body>
               </Col>
-              <SvgContainer $fill={"--basic-grade6"}>
+              <SvgContainer
+                $fill={"--basic-grade6"}
+                onClick={() => logout()}
+                style={{ cursor: "pointer" }}
+              >
                 <Logout />
               </SvgContainer>
             </Row>

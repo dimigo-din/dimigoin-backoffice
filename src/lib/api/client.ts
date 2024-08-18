@@ -1,10 +1,11 @@
 import axios from "axios";
 import defaultClient from "./defaultClient";
-import { getCookie } from "./cookie";
+import { getCookie, removeCookie } from "./cookie";
+import { refreshJWT } from "./auth";
 
 const authClient = axios.create({
-  baseURL: process.env.API_BASE_URL,
-  withCredentials: true,
+  baseURL: process.env.NEXT_PUBLIC_API_BASE_URL,
+  withCredentials: false,
   headers: {
     "Content-Type": "application/json",
   },
@@ -12,7 +13,8 @@ const authClient = axios.create({
 
 authClient.interceptors.request.use(
   (config) => {
-    const accessToken = localStorage.getItem("jwt");
+    const accessToken = getCookie("jwt");
+
     config.headers.Authorization = `Bearer ${accessToken}`;
     return config;
   },
@@ -23,7 +25,9 @@ authClient.interceptors.response.use(
   async (response) => response,
   async (error) => {
     if (error.response.status === 401) {
-      localStorage.removeItem("jwt");
+      removeCookie("jwt");
+      const refreshToken = getCookie("refresh");
+      refreshJWT({ token: refreshToken });
     }
     return Promise.reject(error);
   }

@@ -5,11 +5,18 @@ import { Row } from "@/components/atomic";
 import { styled } from "styled-components";
 import Download from "@material-symbols/svg-300/rounded/download.svg";
 import DataList from "./dataList";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { gradeType } from "@/lib/types/student";
+import { getStayApplication } from "@/lib/api/stay";
 
 const ApplyList = () => {
   const [grade, setGrade] = useState<gradeType>("전체");
+
+  useEffect(() => {
+    getStayApplication().then((res) => {
+      console.log(res);
+    });
+  }, []);
   return (
     <Container>
       <Col $fullh>

@@ -1,19 +1,27 @@
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Heading,
   Body,
   Row,
   Circle,
-  Col,
   FootNote,
   SvgContainer,
 } from "@/components/atomic/index";
 import Close from "@material-symbols/svg-300/rounded/close.svg";
 import styled from "styled-components";
 import Link from "next/link";
-const generateSeatData = () => {
+import { getStaySeats } from "@/lib/api/stay";
+
+type Seat = {
+  grade: number[];
+  isApplied: boolean;
+  seat: string;
+  _id: string;
+};
+
+const generateSeatData = (res: Seat[]) => {
   const rows = 10;
-  const cols = 20;
+  const cols = 19;
   const data = [];
 
   for (let i = 0; i < rows; i++) {
@@ -21,13 +29,8 @@ const generateSeatData = () => {
     for (let j = 0; j < cols + 1; j++) {
       if (j === 0) {
         row.push({
-          label: ["#", 1, 2, 3, 4, 5, 6, 7, 8, 9][i],
-          status: "leftLabel",
-        });
-      } else if (i === 0) {
-        row.push({
           label: [
-            "",
+            "#",
             "A",
             "B",
             "C",
@@ -37,29 +40,53 @@ const generateSeatData = () => {
             "G",
             "H",
             "I",
-            "",
             "J",
             "K",
             "L",
             "M",
             "N",
-            "O",
-            "P",
-            "Q",
-            "R",
-            "S",
+          ][i],
+          status: "leftLabel",
+        });
+      } else if (i === 0) {
+        row.push({
+          label: [
+            "",
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8,
+            9,
+            "",
+            10,
+            11,
+            12,
+            13,
+            14,
+            15,
+            16,
+            17,
+            18,
           ][j],
           status: "label",
         });
-        continue;
       } else if (j === 10) {
         row.push({ label: "", status: "aisle" });
-      } else if (Math.random() < 0.1) {
-        row.push({ label: "", status: "unavailable" });
-      } else if (Math.random() < 0.3) {
-        row.push({ label: "1234\n홍길동", status: "reserved" });
       } else {
-        row.push({ label: "1", status: "available" });
+        const seatIndex = (i - 1) * 18 + (j > 10 ? j - 2 : j - 1);
+        if (seatIndex < res.length) {
+          const seat = res[seatIndex];
+          row.push({
+            label: seat.seat,
+            status: seat.isApplied ? "reserved" : "available",
+          });
+        } else {
+          row.push({ label: "", status: "unavailable" });
+        }
       }
     }
     data.push(row);
@@ -69,11 +96,14 @@ const generateSeatData = () => {
 };
 
 const Seats = () => {
-  const [seatData, setSeatData] = useState<any>([]);
+  const [seatData, setSeatData] = useState<any[][]>([]);
 
   useEffect(() => {
-    setSeatData(generateSeatData()); // For hydration data match
+    getStaySeats().then((res) => {
+      setSeatData(generateSeatData(res));
+    });
   }, []);
+
   return (
     <Container>
       <HeaderRow>
@@ -98,43 +128,37 @@ const Seats = () => {
       <ScrollableContent>
         <ScrollableHorizontal>
           <SeatGrid>
-            {seatData.map((row: any[], idx: any) => (
+            {seatData.map((row, idx) => (
               <Row key={idx}>
-                {row.map(
-                  (seat: { status: string; label: any }, seatIdx: any) => (
-                    <Link
-                      href="/dashboard/stay/manage"
-                      key={`${idx}-${seatIdx}`}
-                    >
-                      {/* ^^ test ^^, /dashboard/stay/manage/[name] */}
-                      <Seat status={seat.status}>
-                        {seat.status === "unavailable" ? (
-                          <SvgContainer
-                            $fill="--basic-grade5"
-                            width={"24px"}
-                            height={"24px"}
-                          >
-                            <Close />
-                          </SvgContainer>
-                        ) : (
-                          <FootNote
-                            $color={
-                              seat.status === "reserved"
-                                ? "--basic-grade1"
-                                : "--basic-grade7"
-                            }
-                            style={{
-                              letterSpacing: "-0.12px",
-                              lineHeight: "14px",
-                            }}
-                          >
-                            {seat.label}
-                          </FootNote>
-                        )}
-                      </Seat>
-                    </Link>
-                  )
-                )}
+                {row.map((seat, seatIdx) => (
+                  <Link href="/dashboard/stay/manage" key={`${idx}-${seatIdx}`}>
+                    <Seat status={seat.status}>
+                      {seat.status === "unavailable" ? (
+                        <SvgContainer
+                          $fill="--basic-grade5"
+                          width={"24px"}
+                          height={"24px"}
+                        >
+                          <Close />
+                        </SvgContainer>
+                      ) : (
+                        <FootNote
+                          $color={
+                            seat.status === "reserved"
+                              ? "--basic-grade1"
+                              : "--basic-grade7"
+                          }
+                          style={{
+                            letterSpacing: "-0.12px",
+                            lineHeight: "14px",
+                          }}
+                        >
+                          {seat.label}
+                        </FootNote>
+                      )}
+                    </Seat>
+                  </Link>
+                ))}
               </Row>
             ))}
           </SeatGrid>

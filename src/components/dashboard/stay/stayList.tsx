@@ -4,6 +4,7 @@ import styled from "styled-components";
 import { toast } from "react-toastify";
 import Add from "@material-symbols/svg-300/rounded/add.svg";
 import Link from "next/link";
+import { useEffect } from "react";
 
 const StayList = () => {
   return (

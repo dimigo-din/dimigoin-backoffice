@@ -10,10 +10,9 @@ import { ToastContainer } from "react-toastify";
 import moment from "moment";
 import "moment/locale/ko";
 import locale from "antd/lib/locale/ko_KR";
-import AuthContext from "@/lib/context/AuthContext";
+import { GoogleOAuthProvider } from "@react-oauth/google";
 
 moment.locale("ko");
-
 export const metadata: Metadata = {
   title: "디미고인",
   description: "디미고인 백오피스",
@@ -25,7 +24,9 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <AuthContext>
+    <GoogleOAuthProvider
+      clientId={process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID || ""}
+    >
       <html lang="en">
         <body>
           <StyledComponentsRegistry>
@@ -84,6 +85,6 @@ export default function RootLayout({
           </StyledComponentsRegistry>
         </body>
       </html>
-    </AuthContext>
+    </GoogleOAuthProvider>
   );
 }
