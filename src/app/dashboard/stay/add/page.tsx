@@ -4,6 +4,7 @@ import ApplyOuting from "@/components/dashboard/stay/add/ApplyOuting";
 import ApplyPeriod from "@/components/dashboard/stay/add/ApplyPeriod";
 import SetSeat from "@/components/dashboard/stay/add/SetSeat";
 import StayPeriod from "@/components/dashboard/stay/add/StayPeriod";
+import { getPong } from "@/lib/api/auth";
 import { Button } from "antd";
 import styled from "styled-components";
 
@@ -21,7 +22,14 @@ export default function Add() {
           </Row>
           <SetSeat />
           <WhiteBox>
-            <Button style={{ width: "100%" }}>
+            <Button
+              style={{ width: "100%" }}
+              onClick={() =>
+                getPong().then((res) => {
+                  console.log(res);
+                })
+              }
+            >
               <Body $color={"--basic-grade1"}>잔류 추가</Body>
             </Button>
           </WhiteBox>
