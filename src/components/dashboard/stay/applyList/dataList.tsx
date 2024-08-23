@@ -1,96 +1,87 @@
 import { Body, Col, Row } from "@/components/atomic";
+import { Application } from "@/lib/types/stay";
 import { styled } from "styled-components";
 
-const DataList = () => {
+interface GroupedStudents {
+  [key: string]: {
+    male: string[];
+    female: string[];
+  };
+}
+
+const DataList = ({ applications }: { applications: Application[] }) => {
+  const groupStudents = (apps: Application[]): GroupedStudents => {
+    return apps.reduce((acc: GroupedStudents, student) => {
+      const key = `${student.student.grade}학년 ${student.student.class}반`;
+      if (!acc[key]) {
+        acc[key] = { male: [], female: [] };
+      }
+      if (student.student.gender === "M") {
+        acc[key].male.push(student.student.name);
+      } else {
+        acc[key].female.push(student.student.name);
+      }
+      return acc;
+    }, {});
+  };
+
+  const groupedStudents = groupStudents(applications);
+
+  // 키를 학년과 반 순으로 정렬하는 함수
+  const sortKeys = (a: string, b: string): number => {
+    const [gradeA, classA] = a.split("학년 ");
+    const [gradeB, classB] = b.split("학년 ");
+    if (gradeA !== gradeB) {
+      return parseInt(gradeA) - parseInt(gradeB);
+    }
+    return parseInt(classA) - parseInt(classB);
+  };
+
+  const sortedKeys = Object.keys(groupedStudents).sort(sortKeys);
+
   return (
     <Col gap={"12px"} padding={"0px 24px 24px 24px"}>
-      <Option>
-        <Row padding={"20px"}>
-          <Col
-            align={"start"}
-            $noShrink
-            style={{ width: "65px", marginRight: "24px" }}
-          >
-            <Body $color={"--basic-grade6"}>2학년 4반</Body>
-            <Body $strong $color={"--basic-grade7"}>
-              총 6명
-            </Body>
-          </Col>
-          <ContentCol gap={"12px"}>
-            <Row gap={"12px"}>
-              <Body $color={"--basic-grade5"} $noShrink>
-                남자
-              </Body>
-              <WrappingBody $color={"--basic-grade8"}>
-                김건우, 문동규, 신동빈, 우채민, 조은율, 홍제형
-              </WrappingBody>
+      {sortedKeys.map((classKey) => {
+        const students = groupedStudents[classKey];
+        return (
+          <Option key={classKey}>
+            <Row padding={"20px"}>
+              <Col
+                align={"start"}
+                $noShrink
+                style={{ width: "65px", marginRight: "24px" }}
+              >
+                <Body $color={"--basic-grade6"}>{classKey}</Body>
+                <Body $strong $color={"--basic-grade7"}>
+                  총 {students.male.length + students.female.length}명
+                </Body>
+              </Col>
+              <ContentCol gap={"12px"}>
+                {students.male.length > 0 && (
+                  <Row gap={"12px"}>
+                    <Body $color={"--basic-grade5"} $noShrink>
+                      남자
+                    </Body>
+                    <WrappingBody $color={"--basic-grade8"}>
+                      {students.male.join(", ")}
+                    </WrappingBody>
+                  </Row>
+                )}
+                {students.female.length > 0 && (
+                  <Row gap={"12px"}>
+                    <Body $color={"--basic-grade5"} $noShrink>
+                      여자
+                    </Body>
+                    <WrappingBody $color={"--basic-grade8"}>
+                      {students.female.join(", ")}
+                    </WrappingBody>
+                  </Row>
+                )}
+              </ContentCol>
             </Row>
-          </ContentCol>
-        </Row>
-      </Option>
-      <Option>
-        <Row padding={"20px"}>
-          <Col
-            align={"start"}
-            $noShrink
-            style={{ width: "65px", marginRight: "24px" }}
-          >
-            <Body $color={"--basic-grade6"}>2학년 4반</Body>
-            <Body $strong $color={"--basic-grade7"}>
-              총 14명
-            </Body>
-          </Col>
-          <ContentCol gap={"12px"}>
-            <Row gap={"12px"}>
-              <Body $color={"--basic-grade5"} $noShrink>
-                남자
-              </Body>
-              <WrappingBody $color={"--basic-grade8"}>
-                강태민, 김도현, 김인찬, 김진현, 박상수, 백현서, 안민혁, 이수성,
-                이유성, 조인성, 차건, 최우성, 최진혁
-              </WrappingBody>
-            </Row>
-            <Row gap={"12px"}>
-              <Body $color={"--basic-grade5"} $noShrink>
-                여자
-              </Body>
-              <WrappingBody $color={"--basic-grade8"}>이유진</WrappingBody>
-            </Row>
-          </ContentCol>
-        </Row>
-      </Option>
-      <Option>
-        <Row padding={"20px"}>
-          <Col
-            align={"start"}
-            $noShrink
-            style={{ width: "65px", marginRight: "24px" }}
-          >
-            <Body $color={"--basic-grade6"}>2학년 4반</Body>
-            <Body $strong $color={"--basic-grade7"}>
-              총 14명
-            </Body>
-          </Col>
-          <ContentCol gap={"12px"}>
-            <Row gap={"12px"}>
-              <Body $color={"--basic-grade5"} $noShrink>
-                남자
-              </Body>
-              <WrappingBody $color={"--basic-grade8"}>
-                김경민, 김도현, 김영환, 서민규, 이율, 전민기, 최재민, 한연수
-              </WrappingBody>
-            </Row>
-            <Row gap={"12px"}>
-              <Body $color={"--basic-grade5"} $noShrink>
-                여자
-              </Body>
-              <WrappingBody $color={"--basic-grade8"}>
-                박성민 왈 6반에 여자 없다
-              </WrappingBody>
-            </Row>
-          </ContentCol>
-        </Row>
-      </Option>
+          </Option>
+        );
+      })}
     </Col>
   );
 };

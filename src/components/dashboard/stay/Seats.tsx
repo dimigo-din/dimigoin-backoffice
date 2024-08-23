@@ -10,42 +10,45 @@ import {
 import Close from "@material-symbols/svg-300/rounded/close.svg";
 import styled from "styled-components";
 import Link from "next/link";
-import { getStaySeats } from "@/lib/api/stay";
+import { currentStayType, seatType, Application } from "@/lib/types/stay";
 
-type Seat = {
-  grade: number[];
-  isApplied: boolean;
-  seat: string;
-  _id: string;
+type SeatData = {
+  label: string;
+  status: string;
+  color?: string;
+  student?: {
+    _id: string;
+    id: string;
+    name: string;
+  };
 };
 
-const generateSeatData = (res: Seat[]) => {
-  const rows = 10;
+const getSeatColor = (gender: string, grade: number) => {
+  const genderColor = gender === "M" ? "blue" : "pink";
+  const gradeColor =
+    grade === 1
+      ? "var(--solid-translucent-blue)"
+      : grade === 2
+      ? "var(--solid-blue)"
+      : "var(--core-status-accent)";
+
+  return gender === "M" ? gradeColor : "var(--solid-translucent-pink)";
+};
+
+const generateSeatData = (
+  seatInfo: seatType,
+  applications: Application[]
+): SeatData[][] => {
+  const rows = 15; // A부터 N까지 15행
   const cols = 19;
-  const data = [];
+  const data: SeatData[][] = [];
 
   for (let i = 0; i < rows; i++) {
-    const row = [];
+    const row: SeatData[] = [];
     for (let j = 0; j < cols + 1; j++) {
-      if (j === 0) {
+      if (i === 0 && j === 0) {
         row.push({
-          label: [
-            "#",
-            "A",
-            "B",
-            "C",
-            "D",
-            "E",
-            "F",
-            "G",
-            "H",
-            "I",
-            "J",
-            "K",
-            "L",
-            "M",
-            "N",
-          ][i],
+          label: "#",
           status: "leftLabel",
         });
       } else if (i === 0) {
@@ -71,22 +74,79 @@ const generateSeatData = (res: Seat[]) => {
             16,
             17,
             18,
-          ][j],
+          ][j].toString(),
           status: "label",
+        });
+      } else if (j === 0) {
+        row.push({
+          label: [
+            "A",
+            "B",
+            "C",
+            "D",
+            "E",
+            "F",
+            "G",
+            "H",
+            "I",
+            "J",
+            "K",
+            "L",
+            "M",
+            "N",
+          ][i - 1],
+          status: "leftLabel",
         });
       } else if (j === 10) {
         row.push({ label: "", status: "aisle" });
       } else {
-        const seatIndex = (i - 1) * 18 + (j > 10 ? j - 2 : j - 1);
-        if (seatIndex < res.length) {
-          const seat = res[seatIndex];
-          row.push({
-            label: seat.seat,
-            status: seat.isApplied ? "reserved" : "available",
-          });
-        } else {
-          row.push({ label: "", status: "unavailable" });
+        const seatLabel = `${
+          [
+            "A",
+            "B",
+            "C",
+            "D",
+            "E",
+            "F",
+            "G",
+            "H",
+            "I",
+            "J",
+            "K",
+            "L",
+            "M",
+            "N",
+          ][i - 1]
+        }${j > 10 ? j - 1 : j}`;
+        const seatData: SeatData = { label: seatLabel, status: "unavailable" };
+
+        for (const [gender, grades] of Object.entries(seatInfo)) {
+          for (const [grade, seats] of Object.entries(grades)) {
+            if (seats.includes(seatLabel)) {
+              seatData.status = "available";
+              seatData.color = getSeatColor(gender, parseInt(grade.slice(1)));
+              break;
+            }
+          }
+          if (seatData.status === "available") break;
         }
+
+        const application = applications.find((app) => app.seat === seatLabel);
+        if (application) {
+          seatData.status = "reserved";
+          seatData.color = "var(--basic-grade6)";
+          seatData.student = {
+            _id: application.student._id,
+            id: `${
+              application.student.grade
+            }${application.student.class.toString()}${application.student.number
+              .toString()
+              .padStart(2, "0")}`,
+            name: application.student.name,
+          };
+        }
+
+        row.push(seatData);
       }
     }
     data.push(row);
@@ -95,14 +155,12 @@ const generateSeatData = (res: Seat[]) => {
   return data;
 };
 
-const Seats = () => {
-  const [seatData, setSeatData] = useState<any[][]>([]);
+const Seats = ({ data }: { data: currentStayType }) => {
+  const [seatData, setSeatData] = useState<SeatData[][]>([]);
 
   useEffect(() => {
-    getStaySeats().then((res) => {
-      setSeatData(generateSeatData(res));
-    });
-  }, []);
+    setSeatData(generateSeatData(data.stay.seat, data.applications));
+  }, [data]);
 
   return (
     <Container>
@@ -112,16 +170,16 @@ const Seats = () => {
         </Heading>
         <LegendRow>
           <LegendItem>
-            <Circle $color={"--basic-grade3"} />
-            <Body $color={"--basic-grade6"}>잔여 좌석</Body>
+            <Circle $color={"--solid-blue"} />
+            <Body $color={"--basic-grade6"}>남학생</Body>
+          </LegendItem>
+          <LegendItem>
+            <Circle $color={"--solid-pink"} />
+            <Body $color={"--basic-grade6"}>여학생</Body>
           </LegendItem>
           <LegendItem>
             <Circle $color={"--basic-grade6"} />
             <Body $color={"--basic-grade6"}>예약된 좌석</Body>
-          </LegendItem>
-          <LegendItem>
-            <Circle $color={"--core-status-accent"} />
-            <Body $color={"--basic-grade6"}>선택한 좌석</Body>
           </LegendItem>
         </LegendRow>
       </HeaderRow>
@@ -131,8 +189,15 @@ const Seats = () => {
             {seatData.map((row, idx) => (
               <Row key={idx}>
                 {row.map((seat, seatIdx) => (
-                  <Link href="/dashboard/stay/manage" key={`${idx}-${seatIdx}`}>
-                    <Seat status={seat.status}>
+                  <Link
+                    href={
+                      (seat.status === "reserved" &&
+                        `/dashboard/stay/manage?studentID=${seat.student?._id}`) ||
+                      ""
+                    }
+                    key={`${idx}-${seatIdx}`}
+                  >
+                    <Seat status={seat.status} color={seat.color}>
                       {seat.status === "unavailable" ? (
                         <SvgContainer
                           $fill="--basic-grade5"
@@ -153,7 +218,9 @@ const Seats = () => {
                             lineHeight: "14px",
                           }}
                         >
-                          {seat.label}
+                          {seat.status === "reserved" && seat.student
+                            ? `${seat.student.id}\n${seat.student.name}`
+                            : seat.label}
                         </FootNote>
                       )}
                     </Seat>
@@ -181,28 +248,28 @@ const Container = styled.div`
 `;
 
 const HeaderRow = styled(Row)`
-  padding: 20px 28px;
+  padding: var(--spacing-500) var(--spacing-550);
   justify-content: space-between;
   align-items: center;
   flex-wrap: wrap;
 `;
 
 const LegendRow = styled(Row)`
-  gap: 16px;
+  gap: var(--spacing-400);
   align-items: center;
   flex-wrap: wrap;
 `;
 
 const LegendItem = styled(Row)`
-  gap: 8px;
+  gap: var(--spacing-200);
   align-items: center;
 `;
 
 const ScrollableContent = styled.div`
   flex: 1;
   overflow-y: auto;
-  padding: 0 32px 0px 32px;
-  margin-bottom: 16px;
+  padding: 0 var(--spacing-700) 0 var(--spacing-700);
+  margin-bottom: var(--spacing-400);
 `;
 
 const ScrollableHorizontal = styled.div`
@@ -215,24 +282,24 @@ const SeatGrid = styled.div`
   white-space: nowrap;
 `;
 
-const Seat = styled.div<{ status: string }>`
+const Seat = styled.div<{ status: string; color?: string }>`
   display: inline-flex;
   width: 50px;
   height: 35px;
-  margin: 2px;
+  margin: var(--spacing-50);
   align-items: center;
-  justify-content: ${(props: { status: string }) =>
+  justify-content: ${(props) =>
     props.status === "leftLabel" ? "left" : "center"};
   font-size: 12px;
-  border-radius: 4px;
+  border-radius: var(--radius-100);
   cursor: pointer;
-  background-color: ${(props: { status: string }) =>
+  background-color: ${(props) =>
     props.status === "available"
-      ? "var(--basic-grade3)"
+      ? props.color || "var(--basic-grade3)"
       : props.status === "reserved"
       ? "var(--basic-grade6)"
       : "transparent"};
-  border: ${(props: { status: string }) =>
+  border: ${(props) =>
     props.status === "unavailable" ? "1px solid var(--basic-grade3)" : "none"};
   white-space: pre-wrap;
   text-align: center;

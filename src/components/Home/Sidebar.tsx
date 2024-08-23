@@ -8,6 +8,7 @@ import Logout from "@material-symbols/svg-300/rounded/logout-fill.svg";
 import LocalLaundryService from "@material-symbols/svg-300/rounded/local_laundry_service.svg";
 import Home from "@material-symbols/svg-300/rounded/home.svg";
 import Run from "@material-symbols/svg-300/rounded/directions_run.svg";
+import Bed from "@material-symbols/svg-300/rounded/bed-fill.svg";
 import { Button } from "antd";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -99,6 +100,22 @@ const Sidebar = () => {
                     </SvgContainer>
                     <Label $color={getIconColor(pathname, "laundry")}>
                       세탁 관리
+                    </Label>
+                  </Row>
+                </Button>
+              </Link>
+              <Link href={"/dashboard/fridayOuting"}>
+                <Button style={{ border: "none", width: "100%", padding: 0 }}>
+                  <Row $fullw gap={"12px"}>
+                    <SvgContainer
+                      $fill={getIconColor(pathname, "fridayOuting")}
+                      width={"20px"}
+                      height={"20px"}
+                    >
+                      <Bed />
+                    </SvgContainer>
+                    <Label $color={getIconColor(pathname, "fridayOuting")}>
+                      금요귀가 관리
                     </Label>
                   </Row>
                 </Button>

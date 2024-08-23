@@ -4,9 +4,17 @@ import styled from "styled-components";
 import { toast } from "react-toastify";
 import Add from "@material-symbols/svg-300/rounded/add.svg";
 import Link from "next/link";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
+import { getStay } from "@/lib/api/stay";
+import { stayType } from "@/lib/types/stay";
 
 const StayList = () => {
+  const [stayList, setStayList] = useState<stayType[]>([]);
+  useEffect(() => {
+    getStay().then((res: stayType[]) => {
+      setStayList(res);
+    });
+  }, []);
   return (
     <Container>
       <Header>
@@ -32,12 +40,14 @@ const StayList = () => {
         </Link>
       </Header>
       <ScrollableDataList>
-        {[...Array(4)].map((_, index) => (
+        {stayList.map((stay, index) => (
           <Option key={index}>
             <Row $fullw padding={"16px 20px"} align={"center"} gap={"8px"}>
               <Row align={"center"} gap={"20px"} style={{ flex: 1 }}>
                 <Switch />
-                <Body $color={"--basic-grade8"}>12월 31일 ~ 12월 31일</Body>
+                <Body $color={"--basic-grade8"}>
+                  {stay.start} ~ {stay.end}
+                </Body>
               </Row>
               <ButtonGroup>
                 <StyledButton>

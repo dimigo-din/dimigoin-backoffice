@@ -1,7 +1,7 @@
 import axios from "axios";
 import defaultClient from "./defaultClient";
 import { getCookie, removeCookie } from "./cookie";
-import { refreshJWT } from "./auth";
+import { refreshJWT, removeRefreshToken } from "./auth";
 
 const authClient = axios.create({
   baseURL: process.env.NEXT_PUBLIC_API_BASE_URL,
@@ -24,10 +24,10 @@ authClient.interceptors.request.use(
 authClient.interceptors.response.use(
   async (response) => response,
   async (error) => {
-    if (error.response.status === 401) {
+    if (error.response?.status === 401) {
       removeCookie("jwt");
-      const refreshToken = getCookie("refresh");
-      refreshJWT({ token: refreshToken });
+      const refreshToken = await getCookie("refresh");
+      await refreshJWT({ token: refreshToken });
     }
     return Promise.reject(error);
   }

@@ -3,17 +3,26 @@ import { Col, Row } from "@/components/atomic";
 import TimeTable from "@/components/dashboard/laundry/timetable";
 import WasherList from "@/components/dashboard/laundry/washerList";
 import { styled } from "styled-components";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import WasherStatus from "@/components/dashboard/laundry/washerStatus";
+import { getWasher } from "@/lib/api/laundry";
+import { washerType } from "@/lib/types/laundry";
 
 export default function Laundry() {
   const [selectedWasher, setSelectedWasher] = useState<string | null>(null);
+  const [washers, setWashers] = useState<washerType[]>([]);
 
+  useEffect(() => {
+    getWasher().then((res) => {
+      setWashers(res);
+    });
+  }, []);
   return (
     <>
       <Container>
         <EqualHeightSection>
           <WasherList
+            washers={washers}
             selectedWasher={selectedWasher}
             setSelectedWasher={setSelectedWasher}
           />

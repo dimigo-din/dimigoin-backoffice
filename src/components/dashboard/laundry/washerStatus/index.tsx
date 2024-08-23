@@ -1,7 +1,52 @@
 import { Heading, Body, Row, Col } from "@/components/atomic";
+import { getCurrentWasher } from "@/lib/api/laundry";
+import {
+  currentWasherType,
+  washerType,
+  washerTimetableType,
+  washerApplication,
+} from "@/lib/types/laundry";
+import { useEffect, useState } from "react";
 import styled from "styled-components";
 
+function getWasherName(
+  gender: "M" | "F",
+  floor: number,
+  position: "L" | "M" | "R" | "-"
+): string {
+  return `${gender === "M" ? "학봉관" : "우정학사"} ${floor}층 ${
+    position === "L"
+      ? "왼쪽"
+      : position === "M"
+      ? "가운데"
+      : position === "R"
+      ? "오른쪽"
+      : position === "-"
+      ? "중앙"
+      : ""
+  } ${floor >= 10 ? "건조기" : "세탁기"}`;
+}
+
 export default function WasherStatus() {
+  const [currentWasher, setCurrentWasher] = useState<currentWasherType | null>(
+    null
+  );
+
+  useEffect(() => {
+    const getWasher = () => {
+      getCurrentWasher().then((res: currentWasherType) => {
+        setCurrentWasher(res);
+      });
+    };
+    getWasher();
+    const int = setInterval(() => getWasher(), 10000);
+    return () => clearInterval(int);
+  }, []);
+
+  if (!currentWasher) {
+    return null; // 데이터를 불러오는 중이거나 데이터가 없는 경우 렌더링하지 않음
+  }
+
   return (
     <StatusContainer>
       <Row
@@ -17,48 +62,50 @@ export default function WasherStatus() {
       </Row>
       <ScrollableContent>
         <Col gap="24px">
-          <StatusGroup>
-            <StatusTitle>학봉관 2층 왼쪽</StatusTitle>
-            <StatusGrid>
-              {[1, 2, 3, 4, 5].map((time) => (
-                <StatusItem key={time}>
-                  <Row justify="space-between">
-                    <Body $color="--basic-grade6">{time}타임</Body>
-                    <Body $color="--basic-grade6">18:35</Body>
-                  </Row>
-                  <Body $color="--basic-grade8">6323 즙수민</Body>
-                </StatusItem>
-              ))}
-            </StatusGrid>
-          </StatusGroup>
-          <StatusGroup>
-            <StatusTitle>학봉관 2층 가운데</StatusTitle>
-            <StatusGrid>
-              {[1, 2, 3, 4, 5].map((time) => (
-                <StatusItem key={time}>
-                  <Row justify="space-between">
-                    <Body $color="--basic-grade6">{time}타임</Body>
-                    <Body $color="--basic-grade6">18:35</Body>
-                  </Row>
-                  <Body $color="--basic-grade8">5113 남궁주헌</Body>
-                </StatusItem>
-              ))}
-            </StatusGrid>
-          </StatusGroup>
-          <StatusGroup>
-            <StatusTitle>학봉관 2층 오른쪽</StatusTitle>
-            <StatusGrid>
-              {[1, 2, 3, 4, 5].map((time) => (
-                <StatusItem key={time}>
-                  <Row justify="space-between">
-                    <Body $color="--basic-grade6">{time}타임</Body>
-                    <Body $color="--basic-grade6">18:35</Body>
-                  </Row>
-                  <Body $color="--basic-grade8">4431 홀두혁</Body>
-                </StatusItem>
-              ))}
-            </StatusGrid>
-          </StatusGroup>
+          {currentWasher.timetables.map((timetable: washerTimetableType) => {
+            const selectedApplications = currentWasher.applications.filter(
+              (app) => app.timetable._id === timetable._id
+            );
+            return (
+              <StatusGroup key={timetable._id}>
+                <StatusTitle>
+                  {getWasherName(
+                    timetable.gender,
+                    timetable.laundry.floor,
+                    timetable.laundry.position
+                  )}
+                </StatusTitle>
+                <StatusGrid>
+                  {timetable.sequence.map((time, index) => {
+                    const selectedApp = selectedApplications.find(
+                      (app) => app.timetable.sequence[app.time] === time
+                    );
+                    return (
+                      <StatusItem
+                        key={index}
+                        $selected={!!selectedApp}
+                        style={{
+                          backgroundColor: selectedApp
+                            ? "var(--component-fill-standard-primary)"
+                            : "var(--basic-grade2)",
+                        }}
+                      >
+                        <Row justify="space-between">
+                          <Body $color="--basic-grade6">{index + 1}타임</Body>
+                          <Body $color="--basic-grade6">{time}</Body>
+                        </Row>
+                        {selectedApp && (
+                          <Body $color="--basic-grade8">
+                            {selectedApp.student.name}
+                          </Body>
+                        )}
+                      </StatusItem>
+                    );
+                  })}
+                </StatusGrid>
+              </StatusGroup>
+            );
+          })}
         </Col>
       </ScrollableContent>
     </StatusContainer>
@@ -99,8 +146,12 @@ const StatusGrid = styled(Row).attrs({
 const StatusItem = styled(Col).attrs({
   gap: "4px",
   padding: "12px",
-})`
-  background-color: var(--basic-grade2);
+})<{ $selected?: boolean }>`
+  background-color: ${(props) =>
+    props.$selected
+      ? "var(--basic-grade2)"
+      : "var(--component-fill-standard-primary)"};
+  border: ${(props) => props.$selected && "1px solid var(--line-outline)"};
   border-radius: 8px;
   width: calc(20% - 9.6px);
 `;

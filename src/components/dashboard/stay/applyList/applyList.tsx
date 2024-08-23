@@ -6,17 +6,23 @@ import { styled } from "styled-components";
 import Download from "@material-symbols/svg-300/rounded/download.svg";
 import DataList from "./dataList";
 import { useEffect, useState } from "react";
-import { gradeType } from "@/lib/types/student";
-import { getStayApplication } from "@/lib/api/stay";
+import { getStay } from "@/lib/api/stay";
+import { Application } from "@/lib/types/stay";
+export type GradeType = "전체" | "1학년" | "2학년" | "3학년";
 
-const ApplyList = () => {
-  const [grade, setGrade] = useState<gradeType>("전체");
+const ApplyList = ({ applications }: { applications: Application[] }) => {
+  const [grade, setGrade] = useState<GradeType>("전체");
 
-  useEffect(() => {
-    getStayApplication().then((res) => {
-      console.log(res);
-    });
-  }, []);
+  const filteredApplications = applications.filter((app: Application) => {
+    if (grade === "전체") return true;
+    const gradeNumber = parseInt(grade);
+    return app.student.grade === gradeNumber;
+  });
+
+  const handleDownload = () => {
+    console.log("Download functionality to be implemented");
+  };
+
   return (
     <Container>
       <Col $fullh>
@@ -32,6 +38,7 @@ const ApplyList = () => {
                 border: "none",
                 backgroundColor: "#F6F7FA",
               }}
+              onClick={handleDownload}
             >
               <Row align={"center"} gap={"4px"}>
                 <Body $color={"--basic-grade7"}>다운로드</Body>
@@ -42,7 +49,7 @@ const ApplyList = () => {
             </Button>
           </Row>
           <Row gap={"20px"}>
-            {["전체", "1학년", "2학년", "3학년"].map((elm: string) => (
+            {(["전체", "1학년", "2학년", "3학년"] as const).map((elm) => (
               <Body
                 key={elm}
                 style={{ cursor: "pointer" }}
@@ -50,7 +57,7 @@ const ApplyList = () => {
                   grade === elm ? "--core-status-accent" : "--basic-grade6"
                 }
                 onClick={() => {
-                  setGrade(elm as gradeType);
+                  setGrade(elm);
                 }}
               >
                 {elm}
@@ -59,7 +66,7 @@ const ApplyList = () => {
           </Row>
         </Col>
         <ScrollableDataList>
-          <DataList />
+          <DataList applications={filteredApplications} />
         </ScrollableDataList>
       </Col>
     </Container>

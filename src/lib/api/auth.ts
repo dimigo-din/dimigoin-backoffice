@@ -14,7 +14,7 @@ export const getPong = async () => {
 };
 
 export const googleLogin = async ({ token }: { token: string }) => {
-  const { data } = await defaultClient.post("auth/login/dimigo?isWeb=true", {
+  const { data } = await defaultClient.post("auth/login/web", {
     token,
   });
   setCookie("jwt", data.accessToken, {});
@@ -24,7 +24,11 @@ export const googleLogin = async ({ token }: { token: string }) => {
 };
 
 export const refreshJWT = async ({ token }: { token: string }) => {
-  const { data } = await defaultClient.post("/auth/refresh", { token });
+  const { data } = await authClient.post("/auth/refresh", { token });
   setCookie("jwt", data.accessToken, {});
   setCookie("refresh", data.refreshToken, {});
+};
+
+export const removeRefreshToken = async ({ token }: { token: string }) => {
+  await authClient.post("/auth/logout", { token });
 };
