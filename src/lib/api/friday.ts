@@ -1,20 +1,30 @@
-import { currentFrigoType } from "../types/friday";
+import { currentFrigoType, frigoType } from "../types/friday";
 import authClient from "./client";
 
 export const getFridayCurrentOuting = async () => {
   const res = await authClient.get<currentFrigoType>("/manage/frigo/current");
-
-  console.log(res);
-  return res.data;
+  return res;
 };
-
+export const getAllFridayOuting = async () => {
+  const res = await authClient.get<frigoType[]>("/manage/frigo");
+  return res;
+};
 export const setFrigo = async ({ id }: { id: string }) => {
-  console.log(id);
-  const { data } = await authClient.patch("/manage/frigo/current" + id);
+  const { data } = await authClient.patch("/manage/frigo/current/" + id);
   return data;
 };
 
 export const unSetFrigo = async ({ id }: { id: string }) => {
   const { data } = await authClient.delete("/manage/frigo/current/" + id);
+  return data;
+};
+
+export const makeFrigo = async ({ date }: { date: string }) => {
+  const { data } = await authClient.post("/manage/frigo", { date });
+  return data;
+};
+
+export const deleteFrigo = async ({ id }: { id: string }) => {
+  const { data } = await authClient.delete("/manage/frigo/" + id);
   return data;
 };

@@ -218,9 +218,15 @@ const Seats = ({ data }: { data: currentStayType }) => {
                             lineHeight: "14px",
                           }}
                         >
-                          {seat.status === "reserved" && seat.student
-                            ? `${seat.student.id}\n${seat.student.name}`
-                            : seat.label}
+                          {seat.status === "reserved" && seat.student ? (
+                            <>
+                              {seat.student.id}
+                              <br />
+                              {seat.student.name}
+                            </>
+                          ) : (
+                            seat.label
+                          )}
                         </FootNote>
                       )}
                     </Seat>
@@ -275,6 +281,7 @@ const ScrollableContent = styled.div`
 const ScrollableHorizontal = styled.div`
   overflow-x: auto;
   width: 100%;
+  text-overflow: clip;
 `;
 
 const SeatGrid = styled.div`

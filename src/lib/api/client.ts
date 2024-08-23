@@ -1,7 +1,15 @@
-import axios from "axios";
+import axios, {
+  AxiosError,
+  InternalAxiosRequestConfig,
+  AxiosResponse,
+} from "axios";
 import defaultClient from "./defaultClient";
-import { getCookie, removeCookie } from "./cookie";
+import { getCookie, setCookie, removeCookie } from "./cookie";
 import { refreshJWT, removeRefreshToken } from "./auth";
+
+interface CustomAxiosRequestConfig extends InternalAxiosRequestConfig {
+  _retry?: boolean;
+}
 
 const authClient = axios.create({
   baseURL: process.env.NEXT_PUBLIC_API_BASE_URL,
@@ -12,22 +20,48 @@ const authClient = axios.create({
 });
 
 authClient.interceptors.request.use(
-  (config) => {
+  (config: CustomAxiosRequestConfig) => {
     const accessToken = getCookie("jwt");
-
-    config.headers.Authorization = `Bearer ${accessToken}`;
+    if (accessToken) {
+      config.headers.Authorization = `Bearer ${accessToken}`;
+    }
     return config;
   },
-  (_) => {}
+  (error) => Promise.reject(error)
 );
 
 authClient.interceptors.response.use(
-  async (response) => response,
-  async (error) => {
-    if (error.response?.status === 401) {
-      removeCookie("jwt");
-      const refreshToken = await getCookie("refresh");
-      await refreshJWT({ token: refreshToken });
+  (response) => response,
+  async (error: AxiosError) => {
+    const originalRequest = error.config as CustomAxiosRequestConfig;
+    if (error.response?.status === 401 && !originalRequest._retry) {
+      originalRequest._retry = true;
+      try {
+        const refreshToken = getCookie("refresh");
+        await refreshJWT({ token: refreshToken });
+
+        const newAccessToken = getCookie("jwt");
+
+        if (newAccessToken) {
+          authClient.defaults.headers.common[
+            "Authorization"
+          ] = `Bearer ${newAccessToken}`;
+          return authClient(originalRequest);
+        } else {
+          if (typeof window !== "undefined") {
+            window.location.href = "/auth";
+          }
+          return Promise.reject(error);
+        }
+      } catch (refreshError) {
+        console.error("Failed to refresh token:", refreshError);
+        removeCookie("jwt");
+        removeCookie("refresh");
+        if (typeof window !== "undefined") {
+          window.location.href = "/auth";
+        }
+        return Promise.reject(refreshError);
+      }
     }
     return Promise.reject(error);
   }

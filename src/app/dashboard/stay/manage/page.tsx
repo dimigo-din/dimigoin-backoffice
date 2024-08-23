@@ -4,16 +4,19 @@ import OutingList from "@/components/dashboard/stay/manage/OutingList/OutingList
 import OutingManage from "@/components/dashboard/stay/manage/OutingManage";
 import StayManage from "@/components/dashboard/stay/manage/stayManage";
 import { getStudentByID } from "@/lib/api/student";
+import { student } from "@/lib/types/student";
 import { useSearchParams } from "next/navigation";
-import { useEffect } from "react";
+import { useEffect, useState, useRef } from "react";
 import { styled } from "styled-components";
 
 export default function Manage() {
+  const student = useRef<student | null>(null);
   const params = useSearchParams();
   useEffect(() => {
     const studentID: string | null = params.get("studentID");
     if (studentID)
       getStudentByID({ id: studentID }).then((res) => {
+        student.current = res;
         console.log(res);
       });
   }, [params]);

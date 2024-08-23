@@ -6,12 +6,30 @@ export type currentStayType = {
 };
 
 export type Application = {
-  seat: string;
-  stay: string;
   _id: string;
+  stay: string;
   student: student;
+  seat: string;
 };
 
+export type OutgoType = {
+  _id: string;
+  stay: string;
+  student: student;
+  free: boolean;
+  date: string;
+  duration: stayDurationType;
+  meal: MealSelectionType;
+  reason: string;
+  status: "W" | "R" | "A";
+};
+
+export type MealSelectionType = {
+  _id: string;
+  breakfast: boolean;
+  lunch: boolean;
+  dinner: boolean;
+};
 export type stayType = {
   _id: string;
   current: boolean;

@@ -93,6 +93,10 @@ const Option = styled.div`
   background-color: var(--basic-grade2);
   border-radius: 12px;
   overflow: hidden;
+
+  div {
+    white-space: normal;
+  }
 `;
 
 const ContentCol = styled(Col)`

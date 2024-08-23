@@ -1,6 +1,5 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
-import { getCookie } from "./lib/api/cookie";
 function shouldExclude(request: NextRequest) {
   const path = request.nextUrl.pathname;
 
