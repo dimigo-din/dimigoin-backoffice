@@ -6,7 +6,6 @@ export const logout = async () => {
   removeCookie("jwt");
   removeCookie("refresh");
   window.location.href = "/auth";
-  window.location.reload();
 };
 export const getPong = async () => {
   const { data } = await defaultClient.get("auth/ping");

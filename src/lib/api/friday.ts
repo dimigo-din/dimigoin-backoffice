@@ -28,3 +28,23 @@ export const deleteFrigo = async ({ id }: { id: string }) => {
   const { data } = await authClient.delete("/manage/frigo/" + id);
   return data;
 };
+
+export const decideFrigo = async ({
+  frigoId,
+  studentId,
+  isApproved,
+}: {
+  frigoId: string;
+  studentId: string;
+  isApproved: boolean;
+}) => {
+  console.log({
+    frigoId,
+    studentId,
+    isApproved,
+  });
+  const { data } = await authClient.patch(
+    `/manage/frigo/${frigoId}/${studentId}?approve=${isApproved}`
+  );
+  return data;
+};

@@ -10,6 +10,7 @@ export type Application = {
   stay: string;
   student: student;
   seat: string;
+  outgo: OutgoType[];
 };
 
 export type OutgoType = {

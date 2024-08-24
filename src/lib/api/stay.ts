@@ -12,3 +12,16 @@ export const getStayCurrent = async () => {
   );
   return data;
 };
+
+export const decideStayOutgo = async ({
+  stayOutGoId,
+  isApprove,
+}: {
+  stayOutGoId: string;
+  isApprove: boolean;
+}) => {
+  const { data } = await authClient.patch(
+    `/manage/stay/outgo/${stayOutGoId}?isApprove=${isApprove}`
+  );
+  return data;
+};

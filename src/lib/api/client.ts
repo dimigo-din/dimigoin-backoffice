@@ -34,12 +34,11 @@ authClient.interceptors.response.use(
   (response) => response,
   async (error: AxiosError) => {
     const originalRequest = error.config as CustomAxiosRequestConfig;
-    if (error.response?.status === 401 && !originalRequest._retry) {
-      originalRequest._retry = true;
+    if (error.response?.status === 401) {
       try {
         const refreshToken = getCookie("refresh");
         await refreshJWT({ token: refreshToken });
-
+        window.location.reload();
         const newAccessToken = getCookie("jwt");
 
         if (newAccessToken) {
@@ -57,9 +56,9 @@ authClient.interceptors.response.use(
         console.error("Failed to refresh token:", refreshError);
         removeCookie("jwt");
         removeCookie("refresh");
-        if (typeof window !== "undefined") {
-          window.location.href = "/auth";
-        }
+        // if (typeof window !== "undefined") {
+        //   window.location.href = "/auth";
+        // }
         return Promise.reject(refreshError);
       }
     }

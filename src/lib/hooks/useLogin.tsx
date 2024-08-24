@@ -5,7 +5,7 @@ const useLogin = () => {
     hosted_domain: "dimigo.hs.kr",
     flow: "auth-code",
     ux_mode: "popup",
-    redirect_uri: "http://localhost:3000/dashboard",
+    redirect_uri: "http://localhost:3000/dashboard/stay",
     onSuccess: async (auth) => {
       await googleLogin({ token: auth.code });
     },

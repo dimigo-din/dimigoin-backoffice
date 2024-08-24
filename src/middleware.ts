@@ -16,8 +16,11 @@ export function middleware(request: NextRequest) {
   if (!accessToken && request.nextUrl.pathname !== "/auth") {
     return NextResponse.redirect(new URL("/auth", request.url));
   }
-  if (request.nextUrl.pathname === "/") {
-    return NextResponse.redirect(new URL("/dashboard", request.url));
+  if (
+    request.nextUrl.pathname === "/" ||
+    request.nextUrl.pathname === "/dashboard"
+  ) {
+    return NextResponse.redirect(new URL("/dashboard/stay", request.url));
   }
 }
 

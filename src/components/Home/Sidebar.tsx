@@ -9,13 +9,14 @@ import LocalLaundryService from "@material-symbols/svg-300/rounded/local_laundry
 import Home from "@material-symbols/svg-300/rounded/home.svg";
 import Run from "@material-symbols/svg-300/rounded/directions_run.svg";
 import Bed from "@material-symbols/svg-300/rounded/bed-fill.svg";
+import Sprint from "@material-symbols/svg-300/rounded/sprint.svg";
 import { Button } from "antd";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { logout } from "@/lib/api/auth";
 
 function getIconColor(pathname: string, key: string, exact?: boolean): string {
-  return (exact ? pathname === "/" + key : pathname.includes("/" + key))
+  return (exact ? pathname === "/" + key : pathname.split("/").includes(key))
     ? "--core-status-accent"
     : "--basic-grade7";
 }
@@ -56,7 +57,7 @@ const Sidebar = () => {
               </SvgContainer>
             </Row>
             <Col $fullw gap={"12px"}>
-              <Link href={"/dashboard"}>
+              {/* <Link href={"/dashboard"}>
                 <Button style={{ border: "none", width: "100%", padding: 0 }}>
                   <Row $fullw gap={"12px"}>
                     <SvgContainer
@@ -71,7 +72,7 @@ const Sidebar = () => {
                     </Label>
                   </Row>
                 </Button>
-              </Link>
+              </Link> */}
               <Link href={"/dashboard/stay"}>
                 <Button style={{ border: "none", width: "100%", padding: 0 }}>
                   <Row $fullw gap={"12px"}>
@@ -116,6 +117,22 @@ const Sidebar = () => {
                     </SvgContainer>
                     <Label $color={getIconColor(pathname, "fridayOuting")}>
                       금요귀가 관리
+                    </Label>
+                  </Row>
+                </Button>
+              </Link>
+              <Link href={"/dashboard/stayOuting"}>
+                <Button style={{ border: "none", width: "100%", padding: 0 }}>
+                  <Row $fullw gap={"12px"}>
+                    <SvgContainer
+                      $fill={getIconColor(pathname, "stayOuting")}
+                      width={"20px"}
+                      height={"20px"}
+                    >
+                      <Sprint />
+                    </SvgContainer>
+                    <Label $color={getIconColor(pathname, "stayOuting")}>
+                      잔류외출 관리
                     </Label>
                   </Row>
                 </Button>
