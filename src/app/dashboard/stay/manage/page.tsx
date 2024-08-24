@@ -10,16 +10,16 @@ import { useEffect, useState, useRef } from "react";
 import { styled } from "styled-components";
 
 export default function Manage() {
-  const student = useRef<student | null>(null);
-  const params = useSearchParams();
-  useEffect(() => {
-    const studentID: string | null = params.get("studentID");
-    if (studentID)
-      getStudentByID({ id: studentID }).then((res) => {
-        student.current = res;
-        console.log(res);
-      });
-  }, [params]);
+  // const student = useRef<student | null>(null);
+  // const params = useSearchParams();
+  // useEffect(() => {
+  //   const studentID: string | null = params.get("studentID");
+  //   if (studentID)
+  //     getStudentByID({ id: studentID }).then((res) => {
+  //       student.current = res;
+  //       console.log(res);
+  //     });
+  // }, [params]);
   return (
     <>
       <Container>
