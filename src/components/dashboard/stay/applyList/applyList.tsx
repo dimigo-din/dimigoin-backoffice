@@ -6,7 +6,7 @@ import { styled } from "styled-components";
 import Download from "@material-symbols/svg-300/rounded/download.svg";
 import DataList from "./dataList";
 import { useEffect, useState } from "react";
-import { getStay } from "@/lib/api/stay";
+import { downloadStay, getStay } from "@/lib/api/stay";
 import { Application } from "@/lib/types/stay";
 export type GradeType = "전체" | "1학년" | "2학년" | "3학년";
 
@@ -20,7 +20,8 @@ const ApplyList = ({ applications }: { applications: Application[] }) => {
   });
 
   const handleDownload = () => {
-    console.log("Download functionality to be implemented");
+    if (grade === "전체") return;
+    downloadStay({ grade: grade[0] });
   };
 
   return (

@@ -1,5 +1,6 @@
 import { currentStayType } from "../types/stay";
 import authClient from "./client";
+import { getCookie } from "./cookie";
 
 export const getStay = async () => {
   const { data } = await authClient.get("/manage/stay");
@@ -24,4 +25,54 @@ export const decideStayOutgo = async ({
     `/manage/stay/outgo/${stayOutGoId}?isApprove=${isApprove}`
   );
   return data;
+};
+
+export const downloadStay = async ({ grade }: { grade: string }) => {
+  const accessToken = await getCookie("jwt");
+
+  var xhr = new XMLHttpRequest();
+  xhr.open(
+    "GET",
+    `${process.env.NEXT_PUBLIC_API_BASE_URL}/manage/stay/current/excel/${grade}`,
+    true
+  );
+  // 액세스 토큰을 요청 헤더에 포함
+  xhr.setRequestHeader("Authorization", `Bearer ${accessToken}`);
+  xhr.responseType = "blob";
+
+  xhr.onload = function (e) {
+    if (xhr.status === 200) {
+      var blob = xhr.response;
+      var contentDispo = xhr.getResponseHeader("Content-Disposition");
+      var fileName = "download.xlsx"; // 기본 파일 이름
+
+      if (contentDispo) {
+        var matches = contentDispo.match(
+          /filename[^;=\n]*=((['"]).*?\2|[^;\n]*)/
+        );
+        if (matches != null && matches[1]) {
+          fileName = matches[1].replace(/['"]/g, "");
+        }
+      }
+
+      saveOrOpenBlob(blob, fileName);
+    } else {
+      console.error("File download failed with status: " + xhr.status);
+    }
+  };
+
+  xhr.send();
+
+  function saveOrOpenBlob(blob, fileName) {
+    var url = window.URL.createObjectURL(blob);
+    var a = document.createElement("a");
+    a.href = url;
+    a.download = fileName;
+    document.body.appendChild(a);
+    a.click();
+    setTimeout(function () {
+      window.URL.revokeObjectURL(url);
+      document.body.removeChild(a);
+    }, 0);
+  }
 };

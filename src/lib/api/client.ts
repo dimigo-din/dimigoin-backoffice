@@ -5,7 +5,7 @@ import axios, {
 } from "axios";
 import defaultClient from "./defaultClient";
 import { getCookie, setCookie, removeCookie } from "./cookie";
-import { refreshJWT, removeRefreshToken } from "./auth";
+import { logout, refreshJWT, removeRefreshToken } from "./auth";
 
 interface CustomAxiosRequestConfig extends InternalAxiosRequestConfig {
   _retry?: boolean;
@@ -33,36 +33,12 @@ authClient.interceptors.request.use(
 authClient.interceptors.response.use(
   (response) => response,
   async (error: AxiosError) => {
-    const originalRequest = error.config as CustomAxiosRequestConfig;
     if (error.response?.status === 401) {
-      try {
-        const refreshToken = getCookie("refresh");
-        await refreshJWT({ token: refreshToken });
-        window.location.reload();
-        const newAccessToken = getCookie("jwt");
-
-        if (newAccessToken) {
-          authClient.defaults.headers.common[
-            "Authorization"
-          ] = `Bearer ${newAccessToken}`;
-          return authClient(originalRequest);
-        } else {
-          if (typeof window !== "undefined") {
-            window.location.href = "/auth";
-          }
-          return Promise.reject(error);
-        }
-      } catch (refreshError) {
-        console.error("Failed to refresh token:", refreshError);
-        removeCookie("jwt");
-        removeCookie("refresh");
-        // if (typeof window !== "undefined") {
-        //   window.location.href = "/auth";
-        // }
-        return Promise.reject(refreshError);
-      }
+      const refreshToken = getCookie("refresh");
+      refreshJWT({ token: refreshToken }).catch((e) => {
+        logout();
+      });
     }
-    return Promise.reject(error);
   }
 );
 
