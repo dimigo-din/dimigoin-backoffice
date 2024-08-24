@@ -27,6 +27,8 @@ export const decideStayOutgo = async ({
   return data;
 };
 
+export const makeStay = async () => {};
+
 export const downloadStay = async ({ grade }: { grade: string }) => {
   const accessToken = await getCookie("jwt");
 
@@ -63,7 +65,7 @@ export const downloadStay = async ({ grade }: { grade: string }) => {
 
   xhr.send();
 
-  function saveOrOpenBlob(blob, fileName) {
+  function saveOrOpenBlob(blob: Blob | MediaSource, fileName: string) {
     var url = window.URL.createObjectURL(blob);
     var a = document.createElement("a");
     a.href = url;
