@@ -10,15 +10,19 @@ import styled from "styled-components";
 
 export default function Stay() {
   const [currentStayData, setCurrentStayData] = useState<currentStayType>();
-  useEffect(() => {
+
+  const refetch = () => {
     getStayCurrent().then((res: currentStayType) => {
       setCurrentStayData(res);
     });
+  };
+  useEffect(() => {
+    refetch();
   }, []);
   return (
     <Container>
       <EqualHeightSection>
-        <StayList />
+        <StayList refetch={refetch} />
         <ApplyList applications={currentStayData?.applications || []} />
       </EqualHeightSection>
       <EqualHeightSection>

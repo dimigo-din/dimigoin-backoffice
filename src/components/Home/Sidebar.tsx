@@ -1,6 +1,6 @@
 "use client";
 
-import React, {useEffect, useState} from "react";
+import React, { useEffect, useState } from "react";
 import styled from "styled-components";
 import { Body, Col, Label, Row, SvgContainer } from "../atomic";
 import Image from "next/image";
@@ -13,8 +13,23 @@ import { Button } from "antd";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { logout } from "@/lib/api/auth";
-import {getCookie} from "@/lib/api/cookie";
+import { getCookie } from "@/lib/api/cookie";
+import { student } from "@/lib/types/student";
+function parseJwt(token: string): student {
+  var base64Url = token.split(".")[1];
+  var base64 = base64Url.replace(/-/g, "+").replace(/_/g, "/");
+  var jsonPayload = decodeURIComponent(
+    window
+      .atob(base64)
+      .split("")
+      .map(function (c) {
+        return "%" + ("00" + c.charCodeAt(0).toString(16)).slice(-2);
+      })
+      .join("")
+  );
 
+  return JSON.parse(jsonPayload);
+}
 function getIconColor(pathname: string, key: string, exact?: boolean): string {
   return (exact ? pathname === "/" + key : pathname.split("/").includes(key))
     ? "--core-status-accent"
@@ -28,13 +43,12 @@ function base64ToBytes(base64: string) {
 
 const Sidebar = () => {
   const pathname = usePathname();
-  const [userData, setUserData] = useState({name: ""});
-  const jwtBody = getCookie("jwt").split(".")[1];
-
+  const [profile, setProfile] = useState<student | null>(null);
   useEffect(() => {
-    setUserData(JSON.parse(new TextDecoder().decode(base64ToBytes(jwtBody))));
+    const jwt = getCookie("jwt");
+    setProfile(parseJwt(jwt));
+    console.log(parseJwt(jwt));
   }, []);
-
   return (
     <>
       <Container>
@@ -58,7 +72,7 @@ const Sidebar = () => {
                 >
                   선생님
                 </Label>
-                <Body $strong>{userData.name}</Body>
+                <Body $strong>{profile?.name}</Body>
               </Col>
               <SvgContainer
                 $fill={"--basic-grade6"}

@@ -1,9 +1,14 @@
-import { currentStayType } from "../types/stay";
+import { currentStayType, seatType } from "../types/stay";
 import authClient from "./client";
 import { getCookie } from "./cookie";
 
 export const getStay = async () => {
   const { data } = await authClient.get("/manage/stay");
+  return data;
+};
+
+export const getStayById = async ({ id }: { id: string }) => {
+  const { data } = await authClient.get("/manage/stay/" + id);
   return data;
 };
 
@@ -27,8 +32,51 @@ export const decideStayOutgo = async ({
   return data;
 };
 
-export const makeStay = async () => {};
+export const setStay = async ({ id }: { id: string }) => {
+  const { data } = await authClient.patch("/manage/stay/current/" + id);
+  return data;
+};
+export const unSetStay = async ({ id }: { id: string }) => {
+  const { data } = await authClient.delete("/manage/stay/current/" + id);
+  return data;
+};
+interface Duration {
+  start: string;
+  end: string;
+}
 
+interface Date {
+  date: string;
+  free: boolean;
+}
+
+interface StayData {
+  duration: Duration[];
+  start: string;
+  end: string;
+  dates: Date[];
+  seat: seatType;
+}
+
+export const makeStay = async (stayData: StayData) => {
+  const { _id, ...updatedSeat } = stayData.seat;
+
+  const updatedStayData = {
+    ...stayData,
+    seat: updatedSeat,
+  };
+  const { data } = await authClient.post("/manage/stay", updatedStayData);
+  return data;
+};
+export const editStay = async (stayData: StayData, id: string) => {
+  const { data } = await authClient.put("/manage/stay/" + id, stayData);
+  return data;
+};
+
+export const deleteStay = async ({ id }: { id: string }) => {
+  const { data } = await authClient.delete("/manage/stay/" + id);
+  return data;
+};
 export const downloadStay = async ({ grade }: { grade: string }) => {
   const accessToken = await getCookie("jwt");
 
@@ -46,7 +94,7 @@ export const downloadStay = async ({ grade }: { grade: string }) => {
     if (xhr.status === 200) {
       let blob = xhr.response;
       let contentDispo = xhr.getResponseHeader("Content-Disposition");
-      let fileName = "download.xlsx"; // 기본 파일 이름
+      let fileName = `${grade}학년 잔류표.xlsx`; // 기본 파일 이름
       if (contentDispo) {
         let matches = contentDispo.match(
           /filename[^;=\n]*=((['"]).*?\2|[^;\n]*)/

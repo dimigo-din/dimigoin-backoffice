@@ -36,6 +36,7 @@ export default function WasherStatus() {
     const getWasher = () => {
       getCurrentWasher().then((res: currentWasherType) => {
         setCurrentWasher(res);
+        console.log(res);
       });
     };
     getWasher();

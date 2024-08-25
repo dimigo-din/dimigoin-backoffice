@@ -10,3 +10,13 @@ export const getCurrentWasher = async () => {
   const { data } = await authClient.get("/laundry");
   return data;
 };
+
+type washerApiType = {
+  floor: number;
+  position: "L" | "M" | "R" | "-";
+  gender: "M" | "F";
+};
+export const createWasher = async (washerData: washerApiType) => {
+  const { data } = await authClient.post("/manage/laundry", washerData);
+  return data;
+};

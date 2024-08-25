@@ -31,7 +31,7 @@ export default function WasherList({
 }: WasherListProps) {
   const [location, setLocation] = useState<"학봉관" | "우정학사">("학봉관");
   const [openWasher, setOpenWasher] = useState<string | null>(null);
-
+  const [isAddingWasher, setIsAddingWasher] = useState<boolean>(false);
   const handleWasherSelect = (washer: string) => {
     if (selectedWasher === washer) {
       setSelectedWasher(null);
@@ -87,12 +87,21 @@ export default function WasherList({
             style={{
               borderRadius: "20px",
               border: "none",
-              backgroundColor: "#F6F7FA",
+              backgroundColor: isAddingWasher
+                ? "var(--core-status-accent)"
+                : "#F6F7FA",
             }}
+            onClick={() => setIsAddingWasher((prev) => !prev)}
           >
             <Row align={"center"} gap={"4px"}>
-              <Body $color={"--basic-grade7"}>세탁기 추가</Body>
-              <SvgContainer $fill={"--basic-grade7"}>
+              <Body
+                $color={isAddingWasher ? "--basic-grade1" : "--basic-grade7"}
+              >
+                세탁기 추가
+              </Body>
+              <SvgContainer
+                $fill={isAddingWasher ? "--basic-grade1" : "--basic-grade7"}
+              >
                 <Add />
               </SvgContainer>
             </Row>
@@ -101,6 +110,12 @@ export default function WasherList({
 
         <ScrollableContent>
           <Col gap={"12px"}>
+            {isAddingWasher && (
+              <>
+                <WasherAdd />
+              </>
+            )}
+
             {washers
               .filter(
                 (elm) => elm.gender === (location === "학봉관" ? "M" : "F")
@@ -128,7 +143,6 @@ export default function WasherList({
                   }
                 />
               ))}
-            <WasherAdd />
           </Col>
         </ScrollableContent>
       </Container>

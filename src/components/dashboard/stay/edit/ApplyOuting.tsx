@@ -1,9 +1,9 @@
-// ApplyOuting.tsx
 import { Body, Heading, Row, Col } from "@/components/atomic";
 import { Switch, DatePicker, Button } from "antd";
 import { styled } from "styled-components";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Dayjs } from "dayjs";
+import dayjs from "dayjs";
 
 interface Date {
   date: string;
@@ -12,10 +12,18 @@ interface Date {
 
 interface ApplyOutingProps {
   onChange: (dates: Date[]) => void;
+  initialDates: Date[];
 }
 
-export default function ApplyOuting({ onChange }: ApplyOutingProps) {
-  const [dates, setDates] = useState<Date[]>([]);
+export default function ApplyOuting({
+  onChange,
+  initialDates,
+}: ApplyOutingProps) {
+  const [dates, setDates] = useState<Date[]>(initialDates);
+
+  useEffect(() => {
+    setDates(initialDates);
+  }, [initialDates]);
 
   const handleDateChange = (date: Dayjs | null) => {
     if (date) {
@@ -33,6 +41,13 @@ export default function ApplyOuting({ onChange }: ApplyOutingProps) {
     setDates(newDates);
     onChange(newDates);
   };
+
+  const handleDeleteDate = (dateToDelete: string) => {
+    const newDates = dates.filter((d) => d.date !== dateToDelete);
+    setDates(newDates);
+    onChange(newDates);
+  };
+
   return (
     <Container>
       <Row
@@ -54,11 +69,7 @@ export default function ApplyOuting({ onChange }: ApplyOutingProps) {
                 <Body $strong $color={"--basic-grade8"}>
                   {date.date}
                 </Body>
-                <Button
-                  onClick={() => {
-                    setDates(dates.filter((elm) => elm.date !== date.date));
-                  }}
-                >
+                <Button onClick={() => handleDeleteDate(date.date)}>
                   삭제
                 </Button>
               </Row>

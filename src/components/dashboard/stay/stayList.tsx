@@ -5,16 +5,35 @@ import { toast } from "react-toastify";
 import Add from "@material-symbols/svg-300/rounded/add.svg";
 import Link from "next/link";
 import { useEffect, useState } from "react";
-import { getStay } from "@/lib/api/stay";
+import { deleteStay, getStay, setStay, unSetStay } from "@/lib/api/stay";
 import { stayType } from "@/lib/types/stay";
 
-const StayList = () => {
+const StayList = ({ refetch }: { refetch: () => void }) => {
   const [stayList, setStayList] = useState<stayType[]>([]);
   useEffect(() => {
     getStay().then((res: stayType[]) => {
       setStayList(res);
     });
   }, []);
+
+  const handleStayDelete = (id: string) => {
+    deleteStay({ id }).then((res) => {
+      toast.success("잔류가 삭제되었습니다.");
+      refetch();
+    });
+  };
+
+  const handleActivation = (ok: boolean, id: string) => {
+    if (ok) {
+      setStay({ id }).then((res) => {
+        refetch();
+      });
+    } else {
+      unSetStay({ id }).then((res) => {
+        refetch();
+      });
+    }
+  };
   return (
     <Container>
       <Header>
@@ -44,16 +63,22 @@ const StayList = () => {
           <Option key={index}>
             <Row $fullw padding={"16px 20px"} align={"center"} gap={"8px"}>
               <Row align={"center"} gap={"20px"} style={{ flex: 1 }}>
-                <Switch />
+                <Switch
+                  defaultChecked={stay.current}
+                  onClick={(checked) => handleActivation(checked, stay._id)}
+                />
                 <Body $color={"--basic-grade8"}>
                   {stay.start} ~ {stay.end}
                 </Body>
               </Row>
               <ButtonGroup>
-                <StyledButton>
-                  <Body $color={"--basic-grade8"}>수정</Body>
-                </StyledButton>
-                <StyledButton onClick={() => toast("삭제되었습니다.")}>
+                <Link href={"/dashboard/stay/edit?stayId=" + stay._id}>
+                  <StyledButton>
+                    <Body $color={"--basic-grade8"}>수정</Body>
+                  </StyledButton>
+                </Link>
+
+                <StyledButton onClick={() => handleStayDelete(stay._id)}>
                   <Body $color={"--basic-grade8"}>삭제</Body>
                 </StyledButton>
               </ButtonGroup>

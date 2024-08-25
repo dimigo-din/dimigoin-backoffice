@@ -1,14 +1,15 @@
 "use client";
 import { Row, Col, Body } from "@/components/atomic";
-import ApplyOuting from "@/components/dashboard/stay/add/ApplyOuting";
-import ApplyPeriod from "@/components/dashboard/stay/add/ApplyPeriod";
-import SetSeat from "@/components/dashboard/stay/add/SetSeat";
-import StayPeriod from "@/components/dashboard/stay/add/StayPeriod";
+import ApplyOuting from "@/components/dashboard/stay/edit/ApplyOuting";
+import ApplyPeriod from "@/components/dashboard/stay/edit/ApplyPeriod";
+import SetSeat from "@/components/dashboard/stay/edit/SetSeat";
+import StayPeriod from "@/components/dashboard/stay/edit/StayPeriod";
 import { Button } from "antd";
 import styled from "styled-components";
-import { useState } from "react";
-import { makeStay } from "@/lib/api/stay";
-import { seatType } from "@/lib/types/stay";
+import { useState, useEffect } from "react";
+import { editStay, getStayById } from "@/lib/api/stay";
+import { useRouter, useSearchParams } from "next/navigation";
+import { currentStayType, seatType, stayType } from "@/lib/types/stay";
 import { toast } from "react-toastify";
 
 interface Duration {
@@ -29,7 +30,11 @@ interface StayData {
   seat: seatType;
 }
 
-export default function Add() {
+export default function Edit() {
+  const searchParams = useSearchParams();
+
+  const stayId = searchParams.get("stayId");
+
   const [stayData, setStayData] = useState<StayData>({
     duration: [],
     start: "",
@@ -45,6 +50,20 @@ export default function Add() {
       M3: [],
     },
   });
+
+  useEffect(() => {
+    if (stayId) {
+      getStayById({ id: stayId }).then((res: currentStayType) => {
+        setStayData({
+          duration: res.stay.duration,
+          start: res.stay.start,
+          end: res.stay.end,
+          dates: res.stay.dates,
+          seat: res.stay.seat,
+        });
+      });
+    }
+  }, [stayId]);
 
   const handleStayPeriodChange = (start: string, end: string) => {
     setStayData((prev) => ({ ...prev, start, end }));
@@ -62,16 +81,18 @@ export default function Add() {
     setStayData((prev) => ({ ...prev, seat }));
   };
 
-  const handleAddStay = () => {
-    makeStay(stayData)
-      .then((res: any) => {
-        toast.success("잔류가 추가되었습니다.");
-        window.location.href = "/dashboard/stay";
-      })
-      .catch((error: any) => {
-        console.error("Error adding stay:", error);
-        // 여기에 에러 처리 로직을 추가할 수 있습니다.
-      });
+  const handleEditStay = () => {
+    if (stayId) {
+      editStay(stayData, stayId as string)
+        .then((res: any) => {
+          toast.success("잔류가 수정되었습니다.");
+          window.location.href = "/dashboard/stay";
+        })
+        .catch((error: any) => {
+          console.error("Error editing stay:", error);
+          // 여기에 에러 처리 로직을 추가할 수 있습니다.
+        });
+    }
   };
 
   return (
@@ -80,15 +101,28 @@ export default function Add() {
         <Col $fullw gap={"16px"}>
           <Row $fullw $flexAll gap={"16px"}>
             <Col gap={"16px"}>
-              <StayPeriod onChange={handleStayPeriodChange} />
-              <ApplyPeriod onChange={handleApplyPeriodChange} />
+              <StayPeriod
+                onChange={handleStayPeriodChange}
+                initialStart={stayData.start}
+                initialEnd={stayData.end}
+              />
+              <ApplyPeriod
+                onChange={handleApplyPeriodChange}
+                initialDurations={stayData.duration}
+              />
             </Col>
-            <ApplyOuting onChange={handleApplyOutingChange} />
+            <ApplyOuting
+              onChange={handleApplyOutingChange}
+              initialDates={stayData.dates}
+            />
           </Row>
-          <SetSeat onChange={handleSetSeatChange} />
+          <SetSeat
+            onChange={handleSetSeatChange}
+            initialSeats={stayData.seat}
+          />
           <WhiteBox>
-            <Button style={{ width: "100%" }} onClick={handleAddStay}>
-              <Body $color={"--basic-grade1"}>잔류 추가</Body>
+            <Button style={{ width: "100%" }} onClick={handleEditStay}>
+              <Body $color={"--basic-grade1"}>수정하기</Body>
             </Button>
           </WhiteBox>
         </Col>
@@ -96,6 +130,7 @@ export default function Add() {
     </>
   );
 }
+
 const Container = styled(Col)`
   gap: 16px;
   width: 100%;
@@ -119,6 +154,7 @@ const Container = styled(Col)`
     border-radius: 10px;
   }
 `;
+
 const WhiteBox = styled.div`
   width: 100%;
   background-color: var(--component-fill-standard-primary);
