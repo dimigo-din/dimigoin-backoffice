@@ -47,12 +47,10 @@ export const downloadStay = async ({ grade }: { grade: string }) => {
       let blob = xhr.response;
       let contentDispo = xhr.getResponseHeader("Content-Disposition");
       let fileName = "download.xlsx"; // 기본 파일 이름
-      console.log(contentDispo)
       if (contentDispo) {
         let matches = contentDispo.match(
           /filename[^;=\n]*=((['"]).*?\2|[^;\n]*)/
         );
-        console.log(matches)
         if (matches != null && matches[1]) {
           fileName = decodeURI(matches[1].replace(/['"]/g, ""));
         }
