@@ -23,7 +23,7 @@ export default function TimeTable({ selectedWasher }: TimeTableProps) {
             시간표 관리
           </Heading>
 
-          <Button
+          {/* <Button
             size="large"
             style={{
               borderRadius: "20px",
@@ -37,13 +37,13 @@ export default function TimeTable({ selectedWasher }: TimeTableProps) {
                 <Add />
               </SvgContainer>
             </Row>
-          </Button>
+          </Button> */}
         </Row>
         <ScrollableContent>
           {selectedWasher ? (
             <Col gap={"16px"}>
-              <TimeTableOptionComponent name="시간표 1" />
-              <TimeTableOptionComponent name="시간표 2" />
+              <TimeTableOptionComponent name="시간표" />
+              {/* <TimeTableOptionComponent name="시간표 2" /> */}
             </Col>
           ) : (
             <NoWasherSelected>

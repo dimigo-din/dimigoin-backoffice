@@ -67,29 +67,33 @@ export default function FrigoList({
             <Heading $color="--content-standard-primary">
               {data ? data.frigo.date : "현재 금요귀가 신청이 없습니다."}
             </Heading>
-            <AccentBtn
-              onClick={() => {
-                data?.applications.forEach((elm) => {
-                  try {
-                    handleDecision(true, elm.student._id);
-                  } catch {}
-                });
-              }}
-            >
-              <Body $color="--basic-grade1">전원 허가</Body>
-            </AccentBtn>
-            <Button
-              onClick={() => {
-                data?.applications.forEach((elm) => {
-                  try {
-                    handleDecision(true, elm.student._id);
-                  } catch {}
-                });
-              }}
-              style={{ border: "1px solid var(--line-outline)" }}
-            >
-              <Body>전원 반려</Body>
-            </Button>
+            {data && (
+              <>
+                <AccentBtn
+                  onClick={() => {
+                    data.applications.forEach((elm) => {
+                      try {
+                        handleDecision(true, elm.student._id);
+                      } catch {}
+                    });
+                  }}
+                >
+                  <Body $color="--basic-grade1">전원 허가</Body>
+                </AccentBtn>
+                <Button
+                  onClick={() => {
+                    data.applications.forEach((elm) => {
+                      try {
+                        handleDecision(true, elm.student._id);
+                      } catch {}
+                    });
+                  }}
+                  style={{ border: "1px solid var(--line-outline)" }}
+                >
+                  <Body>전원 반려</Body>
+                </Button>
+              </>
+            )}
           </Row>
 
           {data && (

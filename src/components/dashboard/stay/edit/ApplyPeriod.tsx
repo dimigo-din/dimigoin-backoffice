@@ -2,7 +2,7 @@ import { Body, Heading, Row, Col } from "@/components/atomic";
 import { DatePicker, TimePicker } from "antd";
 import { styled } from "styled-components";
 import dayjs from "dayjs";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 interface Duration {
   start: string;
@@ -11,14 +11,28 @@ interface Duration {
 
 interface ApplyPeriodProps {
   onChange: (durations: Duration[]) => void;
+  initialDurations: Duration[];
 }
 
-export default function ApplyPeriod({ onChange }: ApplyPeriodProps) {
-  const [durations, setDurations] = useState<Duration[]>([
-    { start: "", end: "" },
-    { start: "", end: "" },
-    { start: "", end: "" },
-  ]);
+export default function ApplyPeriod({
+  onChange,
+  initialDurations,
+}: ApplyPeriodProps) {
+  const [durations, setDurations] = useState<Duration[]>(
+    initialDurations.length
+      ? initialDurations
+      : [
+          { start: "", end: "" },
+          { start: "", end: "" },
+          { start: "", end: "" },
+        ]
+  );
+
+  useEffect(() => {
+    if (initialDurations.length) {
+      setDurations(initialDurations);
+    }
+  }, [initialDurations]);
 
   const handleDateTimeChange = (
     grade: number,

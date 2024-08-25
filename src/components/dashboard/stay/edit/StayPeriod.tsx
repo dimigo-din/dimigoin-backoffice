@@ -2,12 +2,19 @@ import { Body, Heading, Row } from "@/components/atomic";
 import { DatePicker } from "antd";
 import { styled } from "styled-components";
 import { Dayjs } from "dayjs";
+import dayjs from "dayjs";
 
 interface StayPeriodProps {
   onChange: (start: string, end: string) => void;
+  initialStart: string;
+  initialEnd: string;
 }
 
-export default function StayPeriod({ onChange }: StayPeriodProps) {
+export default function StayPeriod({
+  onChange,
+  initialStart,
+  initialEnd,
+}: StayPeriodProps) {
   const handleDateChange = (dates: [Dayjs | null, Dayjs | null] | null) => {
     if (dates && dates[0] && dates[1]) {
       onChange(dates[0].format("YYYY-MM-DD"), dates[1].format("YYYY-MM-DD"));
@@ -30,6 +37,11 @@ export default function StayPeriod({ onChange }: StayPeriodProps) {
         <DatePicker.RangePicker
           style={{ flex: 1 }}
           onChange={handleDateChange}
+          value={[
+            initialStart ? dayjs(initialStart) : null,
+            initialEnd ? dayjs(initialEnd) : null,
+          ]}
+          defaultPickerValue={dayjs(initialStart)}
         />
       </Row>
     </Container>

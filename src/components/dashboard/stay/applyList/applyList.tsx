@@ -20,8 +20,7 @@ const ApplyList = ({ applications }: { applications: Application[] }) => {
   });
 
   const handleDownload = () => {
-    if (grade === "전체") return;
-    downloadStay({ grade: grade[0] });
+    downloadStay({ grade: grade === "전체" ? "" : grade[0] });
   };
 
   return (

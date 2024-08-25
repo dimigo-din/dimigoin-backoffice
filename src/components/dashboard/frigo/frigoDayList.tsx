@@ -25,14 +25,9 @@ export default function FrigoDayList({ refetch }: { refetch: () => void }) {
       .catch((res) => {}); // 404 when there is no frigo application
   };
   const handleFrigoMade = () => {
-    let formatted: string;
+    // why does it keep getting set to the day before???
+    const formatted = date.add(1, "day").toISOString().split("T")[0];
 
-    if (date.day() === 5) {
-      // why does it keep getting set to the day before???
-      formatted = date.add(1, "day").toISOString().split("T")[0];
-    } else {
-      formatted = date.toISOString().split("T")[0];
-    }
     makeFrigo({ date: formatted }).then(
       (res: { current: boolean; date: string; _id: string }) => {
         toast.success("금요귀가가 생성되었습니다.");

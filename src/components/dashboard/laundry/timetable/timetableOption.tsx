@@ -23,9 +23,9 @@ export default function TimeTableOptionComponent({ name }: { name: string }) {
         onClick={() => setOpen((prev) => !prev)}
       >
         <Row gap={"16px"} align={"center"}>
-          <div onClick={(e) => e.stopPropagation()}>
+          {/* <div onClick={(e) => e.stopPropagation()}>
             <Switch />
-          </div>
+          </div> */}
 
           <Body $strong $color={"--basic-grade7"}>
             {name}

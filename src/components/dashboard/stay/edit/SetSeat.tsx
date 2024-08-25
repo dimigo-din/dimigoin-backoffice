@@ -9,7 +9,7 @@ import {
 import React, { useState, useEffect } from "react";
 import styled from "styled-components";
 import Close from "@material-symbols/svg-300/rounded/close.svg";
-import { Radio, RadioChangeEvent } from "antd";
+import { Radio } from "antd";
 import { seatType } from "@/lib/types/stay";
 
 interface SeatData {
@@ -21,15 +21,18 @@ type SeatMode = "male" | "female" | "block" | "unblock" | null;
 
 interface SetSeatProps {
   onChange: (seats: seatType) => void;
+  initialSeats: seatType;
 }
 
-const SetSeat: React.FC<SetSeatProps> = ({ onChange }) => {
+const SetSeat: React.FC<SetSeatProps> = ({ onChange, initialSeats }) => {
   const [seatData, setSeatData] = useState<SeatData[][]>([]);
   const [selectedMode, setSelectedMode] = useState<SeatMode>(null);
 
   useEffect(() => {
-    setSeatData(generateSeatData());
-  }, []);
+    const initialSeatData = generateSeatData();
+    applyInitialSeats(initialSeatData, initialSeats);
+    setSeatData(initialSeatData);
+  }, [initialSeats]);
 
   const generateSeatData = (): SeatData[][] => {
     const rows = 10;
@@ -65,6 +68,24 @@ const SetSeat: React.FC<SetSeatProps> = ({ onChange }) => {
     }
 
     return data;
+  };
+
+  const applyInitialSeats = (
+    seatData: SeatData[][],
+    initialSeats: seatType
+  ) => {
+    (Object.keys(initialSeats) as Array<keyof seatType>).forEach((key) => {
+      if (key !== "_id") {
+        const gender = key.startsWith("M") ? "selectedMale" : "selectedFemale";
+        initialSeats[key].forEach((seat) => {
+          const row = seat.charCodeAt(0) - 64;
+          const col = parseInt(seat.slice(1));
+          if (seatData[row] && seatData[row][col]) {
+            seatData[row][col].status = gender;
+          }
+        });
+      }
+    });
   };
 
   const handleSeatClick = (rowIndex: number, colIndex: number): void => {
@@ -103,7 +124,7 @@ const SetSeat: React.FC<SetSeatProps> = ({ onChange }) => {
 
   const updateSeatsData = (data: SeatData[][]) => {
     const seats: seatType = {
-      _id: "",
+      _id: initialSeats._id,
       M1: [],
       M2: [],
       M3: [],
@@ -251,6 +272,7 @@ const SetSeat: React.FC<SetSeatProps> = ({ onChange }) => {
     </Container>
   );
 };
+
 const Container = styled.div`
   width: 100%;
   background-color: var(--component-fill-standard-primary);
