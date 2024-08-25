@@ -1,4 +1,3 @@
-import { Cookies } from "react-cookie";
 import authClient from "./client";
 import { removeCookie, setCookie } from "./cookie";
 import defaultClient from "./defaultClient";
@@ -23,7 +22,7 @@ export const googleLogin = async ({ token }: { token: string }) => {
 };
 
 export const refreshJWT = async ({ token }: { token: string }) => {
-  const { data } = await authClient.post("/auth/refresh", { token });
+  const { data } = await defaultClient.post("/auth/refresh", { token });
   setCookie("jwt", data.accessToken, {});
   setCookie("refresh", data.refreshToken, {});
 };

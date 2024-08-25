@@ -10,7 +10,7 @@ import { Button } from "antd";
 import { useState, useEffect, useCallback } from "react";
 import styled from "styled-components";
 import RefreshOutlined from "@material-symbols/svg-300/rounded/refresh.svg";
-import { decideFrigo } from "@/lib/api/friday";
+import {decideFrigo, downloadFrigo} from "@/lib/api/friday";
 
 export default function FrigoList({
                                     data,
@@ -91,6 +91,18 @@ export default function FrigoList({
                         style={{ border: "1px solid var(--line-outline)" }}
                     >
                       <Body>전원 반려</Body>
+                    </Button>
+                    <Button
+                        onClick={() => {
+                          data.applications.forEach((elm) => {
+                            try {
+                              downloadFrigo(data.frigo._id);
+                            } catch {}
+                          });
+                        }}
+                        style={{ border: "1px solid var(--line-outline)" }}
+                    >
+                      <Body>다운로드</Body>
                     </Button>
                   </>
               )}
