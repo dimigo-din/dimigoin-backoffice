@@ -72,9 +72,9 @@ export default function WasherStatus() {
         <Heading $strong color="--basic-grade9">
           세탁 신청 현황
         </Heading>
-        <AccentBtn onClick={() => handleDeleteAll()}>
-          <Body $color={"--basic-grade1"}>모든 예약 초기화</Body>
-        </AccentBtn>
+        {/*<AccentBtn onClick={() => handleDeleteAll()}>*/}
+        {/*  <Body $color={"--basic-grade1"}>모든 예약 초기화</Body>*/}
+        {/*</AccentBtn>*/}
       </Row>
       <ScrollableContent>
         <Col gap="24px">
