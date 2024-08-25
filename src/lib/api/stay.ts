@@ -44,16 +44,17 @@ export const downloadStay = async ({ grade }: { grade: string }) => {
 
   xhr.onload = function (e) {
     if (xhr.status === 200) {
-      var blob = xhr.response;
-      var contentDispo = xhr.getResponseHeader("Content-Disposition");
-      var fileName = "download.xlsx"; // 기본 파일 이름
-
+      let blob = xhr.response;
+      let contentDispo = xhr.getResponseHeader("Content-Disposition");
+      let fileName = "download.xlsx"; // 기본 파일 이름
+      console.log(contentDispo)
       if (contentDispo) {
-        var matches = contentDispo.match(
+        let matches = contentDispo.match(
           /filename[^;=\n]*=((['"]).*?\2|[^;\n]*)/
         );
+        console.log(matches)
         if (matches != null && matches[1]) {
-          fileName = matches[1].replace(/['"]/g, "");
+          fileName = decodeURI(matches[1].replace(/['"]/g, ""));
         }
       }
 
