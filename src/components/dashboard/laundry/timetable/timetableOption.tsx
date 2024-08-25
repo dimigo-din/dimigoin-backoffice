@@ -34,22 +34,22 @@ export default function TimeTableOptionComponent({
   const [timetable, setTimeTable] = useState<washerTimetableType>(data);
 
   const handleEditTimeTable = () => {
-    editWasherTimeTable({
-      laundryId: data._id,
-      sequence: timetable.sequence,
-    }).then((res) => {
-      toast.success("시간표가 수정되었습니다.");
-    });
+    // editWasherTimeTable({
+    //   laundryId: data._id,
+    //   sequence: timetable.sequence,
+    // }).then((res) => {
+    //   toast.success("시간표가 수정되었습니다.");
+    // });
   };
 
   const handleAddTime = () => {
-    setTimeTable([...timetable, null]); // 새로운 타임을 추가합니다.
+    // setTimeTable([...timetable, null]); // 새로운 타임을 추가합니다.
   };
 
   const handleTimeChange = (time: Dayjs | null, index: number) => {
-    const newTimetable = [...timetable];
-    newTimetable[index] = time;
-    setTimeTable(newTimetable);
+    // const newTimetable = [...timetable];
+    // newTimetable[index] = time;
+    // setTimeTable(newTimetable);
   };
 
   return (
@@ -131,7 +131,7 @@ export default function TimeTableOptionComponent({
                   </FixedWidthLabel>
                   <TimePicker
                     value={dayjs(time)}
-                    onChange={(time, string) => handleTimeChange(string, index)}
+                    // onChange={(time, string) => handleTimeChange(string, index)}
                   />
                 </Row>
               ))}
