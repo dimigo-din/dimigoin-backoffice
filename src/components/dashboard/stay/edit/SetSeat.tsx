@@ -8,7 +8,6 @@ import {
 } from "@/components/atomic";
 import React, { useState, useEffect } from "react";
 import styled from "styled-components";
-import Close from "@material-symbols/svg-300/rounded/close.svg";
 import { Radio } from "antd";
 import { seatType } from "@/lib/types/stay";
 
@@ -17,7 +16,7 @@ interface SeatData {
   status: string;
 }
 
-type SeatMode = "male" | "female" | "block" | "unblock" | null;
+type SeatMode = "male1" | "male2" | "male3" | "female1" | "female2" | "female3" | "block" | "unblock" | null;
 
 interface SetSeatProps {
   onChange: (seats: seatType) => void;
@@ -76,12 +75,13 @@ const SetSeat: React.FC<SetSeatProps> = ({ onChange, initialSeats }) => {
   ) => {
     (Object.keys(initialSeats) as Array<keyof seatType>).forEach((key) => {
       if (key !== "_id") {
-        const gender = key.startsWith("M") ? "selectedMale" : "selectedFemale";
+        const status = key.startsWith("M") ? "male"+key.substring(1,2) : "female"+key.substring(1,2);
         initialSeats[key].forEach((seat) => {
           const row = seat.charCodeAt(0) - 64;
           const col = parseInt(seat.slice(1));
           if (seatData[row] && seatData[row][col]) {
-            seatData[row][col].status = gender;
+            seatData[row][col].status = status;
+            seatData[row][col].label = key.substring(1,2);
           }
         });
       }
@@ -90,29 +90,23 @@ const SetSeat: React.FC<SetSeatProps> = ({ onChange, initialSeats }) => {
 
   const handleSeatClick = (rowIndex: number, colIndex: number): void => {
     if (rowIndex === 0 || colIndex === 0 || colIndex === 10) return;
-    const seat = seatData[rowIndex][colIndex];
     const newSeatData = [...seatData];
 
     switch (selectedMode) {
-      case "male":
-        if (seat.status === "available" || seat.status === "selectedFemale") {
-          newSeatData[rowIndex][colIndex].status = "selectedMale";
-        }
-        break;
-      case "female":
-        if (seat.status === "available" || seat.status === "selectedMale") {
-          newSeatData[rowIndex][colIndex].status = "selectedFemale";
-        }
+      case "male1":
+      case "male2":
+      case "male3":
+      case "female1":
+      case "female2":
+      case "female3":
+        newSeatData[rowIndex][colIndex].status = selectedMode;
+        newSeatData[rowIndex][colIndex].label = selectedMode.startsWith("male") ? selectedMode.substring(4, 5) : selectedMode.substring(6, 7);
         break;
       case "block":
-        if (seat.status !== "unavailable") {
           newSeatData[rowIndex][colIndex].status = "unavailable";
-        }
         break;
       case "unblock":
-        if (seat.status !== "available") {
           newSeatData[rowIndex][colIndex].status = "available";
-        }
         break;
       default:
         return;
@@ -133,15 +127,17 @@ const SetSeat: React.FC<SetSeatProps> = ({ onChange, initialSeats }) => {
       F3: [],
     };
 
+    console.log(data)
+
     data.forEach((row, rowIndex) => {
       row.forEach((seat, colIndex) => {
         if (
-          seat.status === "selectedMale" ||
-          seat.status === "selectedFemale"
+          seat.status.startsWith("male") ||
+          seat.status.startsWith("female")
         ) {
           const seatLabel = `${String.fromCharCode(64 + rowIndex)}${colIndex}`;
-          const gender = seat.status === "selectedMale" ? "M" : "F";
-          const grade = Math.floor((rowIndex - 1) / 3) + 1;
+          const gender = seat.status.startsWith("male") ? "M" : "F";
+          const grade = seat.status.startsWith("male") ? seat.status.substring(4, 5) : seat.status.substring(6, 7);
           const key = `${gender}${grade}` as keyof seatType;
           if (key in seats) {
             if (key !== "_id") {
@@ -151,7 +147,6 @@ const SetSeat: React.FC<SetSeatProps> = ({ onChange, initialSeats }) => {
         }
       });
     });
-
     onChange(seats);
   };
 
@@ -190,17 +185,7 @@ const SetSeat: React.FC<SetSeatProps> = ({ onChange, initialSeats }) => {
                       isHeader={rowIndex === 0 || colIndex === 0}
                       isAisle={colIndex === 10}
                     >
-                      {seat.status === "unavailable" ? (
-                        <SvgContainer
-                          $fill="--basic-grade5"
-                          width={"16px"}
-                          height={"16px"}
-                        >
-                          <Close />
-                        </SvgContainer>
-                      ) : (
-                        seat.label
-                      )}
+                      {seat.label}
                     </SeatCell>
                   ))}
                 </SeatRow>
@@ -214,13 +199,13 @@ const SetSeat: React.FC<SetSeatProps> = ({ onChange, initialSeats }) => {
               <Row gap={"16px"} justify={"space-between"}>
                 <Col gap={"8px"}>
                   <Body $color={"--basic-grade8"} $strong>
-                    남자
+                    1학년 남자
                   </Body>
-                  <Body $color={"--basic-grade5"}>남자 좌석 선택</Body>
+                  <Body $color={"--basic-grade5"}>1학년 남자 좌석 선택</Body>
                 </Col>
                 <Radio
-                  checked={selectedMode === "male"}
-                  onChange={() => setSelectedMode("male")}
+                  checked={selectedMode === "male1"}
+                  onChange={() => setSelectedMode("male1")}
                 />
               </Row>
             </Option>
@@ -228,13 +213,13 @@ const SetSeat: React.FC<SetSeatProps> = ({ onChange, initialSeats }) => {
               <Row gap={"16px"} justify={"space-between"}>
                 <Col gap={"8px"}>
                   <Body $color={"--basic-grade8"} $strong>
-                    여자
+                    2학년 남자
                   </Body>
-                  <Body $color={"--basic-grade5"}>여자 좌석 선택</Body>
+                  <Body $color={"--basic-grade5"}>1학년 남자 좌석 선택</Body>
                 </Col>
                 <Radio
-                  checked={selectedMode === "female"}
-                  onChange={() => setSelectedMode("female")}
+                  checked={selectedMode === "male2"}
+                  onChange={() => setSelectedMode("male2")}
                 />
               </Row>
             </Option>
@@ -242,13 +227,55 @@ const SetSeat: React.FC<SetSeatProps> = ({ onChange, initialSeats }) => {
               <Row gap={"16px"} justify={"space-between"}>
                 <Col gap={"8px"}>
                   <Body $color={"--basic-grade8"} $strong>
-                    좌석 차단
+                    3학년 남자
                   </Body>
-                  <Body $color={"--basic-grade5"}>좌석 사용 불가 설정</Body>
+                  <Body $color={"--basic-grade5"}>1학년 남자 좌석 선택</Body>
                 </Col>
                 <Radio
-                  checked={selectedMode === "block"}
-                  onChange={() => setSelectedMode("block")}
+                  checked={selectedMode === "male3"}
+                  onChange={() => setSelectedMode("male3")}
+                />
+              </Row>
+            </Option>
+            <Option>
+              <Row gap={"16px"} justify={"space-between"}>
+                <Col gap={"8px"}>
+                  <Body $color={"--basic-grade8"} $strong>
+                    1학년 여자
+                  </Body>
+                  <Body $color={"--basic-grade5"}>1학년 여자 좌석 선택</Body>
+                </Col>
+                <Radio
+                  checked={selectedMode === "female1"}
+                  onChange={() => setSelectedMode("female1")}
+                />
+              </Row>
+            </Option>
+            <Option>
+              <Row gap={"16px"} justify={"space-between"}>
+                <Col gap={"8px"}>
+                  <Body $color={"--basic-grade8"} $strong>
+                    2학년 여자
+                  </Body>
+                  <Body $color={"--basic-grade5"}>2학년 여자 좌석 선택</Body>
+                </Col>
+                <Radio
+                  checked={selectedMode === "female2"}
+                  onChange={() => setSelectedMode("female2")}
+                />
+              </Row>
+            </Option>
+            <Option>
+              <Row gap={"16px"} justify={"space-between"}>
+                <Col gap={"8px"}>
+                  <Body $color={"--basic-grade8"} $strong>
+                    3학년 여자
+                  </Body>
+                  <Body $color={"--basic-grade5"}>3학년 여자 좌석 선택</Body>
+                </Col>
+                <Radio
+                  checked={selectedMode === "female3"}
+                  onChange={() => setSelectedMode("female3")}
                 />
               </Row>
             </Option>
@@ -320,9 +347,13 @@ const SeatCell = styled.div<SeatCellProps>`
     switch (status) {
       case "available":
         return "#e0e0e0";
-      case "selectedMale":
+      case "male1":
+      case "male2":
+      case "male3":
         return "#4a90e2";
-      case "selectedFemale":
+      case "female1":
+      case "female2":
+      case "female3":
         return "#e84393";
       case "unavailable":
         return "";
@@ -335,8 +366,12 @@ const SeatCell = styled.div<SeatCellProps>`
     switch (status) {
       case "available":
         return "#333";
-      case "selectedMale":
-      case "selectedFemale":
+      case "male1":
+      case "male2":
+      case "male3":
+      case "female1":
+      case "female2":
+      case "female3":
         return "#fff";
       case "unavailable":
         return "#999";
