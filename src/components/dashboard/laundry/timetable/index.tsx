@@ -3,9 +3,10 @@ import { Heading, Body, SvgContainer, Row, Col } from "@/components/atomic";
 import { Button, Input, Switch } from "antd";
 import { styled } from "styled-components";
 import TimeTableOptionComponent from "./timetableOption";
+import { washerType } from "@/lib/types/laundry";
 
 interface TimeTableProps {
-  selectedWasher: string | null;
+  selectedWasher: washerType | null;
 }
 
 export default function TimeTable({ selectedWasher }: TimeTableProps) {
@@ -42,7 +43,15 @@ export default function TimeTable({ selectedWasher }: TimeTableProps) {
         <ScrollableContent>
           {selectedWasher ? (
             <Col gap={"16px"}>
-              <TimeTableOptionComponent name="시간표" />
+              {selectedWasher.timetable.map((elm, idx) => (
+                <TimeTableOptionComponent
+                  key={idx}
+                  washer={selectedWasher}
+                  data={elm}
+                  name="시간표"
+                />
+              ))}
+
               {/* <TimeTableOptionComponent name="시간표 2" /> */}
             </Col>
           ) : (

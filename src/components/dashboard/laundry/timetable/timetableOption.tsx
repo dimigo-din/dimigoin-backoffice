@@ -3,16 +3,55 @@ import { Row } from "@/components/atomic";
 import styled from "styled-components";
 import Add from "@material-symbols/svg-300/rounded/add.svg";
 import Arrow from "@material-symbols/svg-300/rounded/chevron_right.svg";
-import Schedule from "@material-symbols/svg-300/rounded/schedule.svg";
 import React, { useState } from "react";
-import { Checkbox, Input, Switch } from "antd";
-import { SwitchClickEventHandler } from "antd/es/switch";
-
-export default function TimeTableOptionComponent({ name }: { name: string }) {
+import { Checkbox, TimePicker } from "antd";
+import dayjs, { Dayjs } from "dayjs";
+import { editWasherTimeTable } from "@/lib/api/laundry";
+import { toast } from "react-toastify";
+import { washerTimetableType, washerType } from "@/lib/types/laundry";
+// {
+//   "laundryId": {},
+//   "sequence": [
+//     "string"
+//   ],
+//   "grade": 0,
+//   "gender": "string",
+//   "type": 0
+// }
+export default function TimeTableOptionComponent({
+  name,
+  data,
+  washer,
+}: {
+  name: string;
+  data: washerTimetableType;
+  washer: washerType;
+}) {
   const [selectedType, setSelectedType] = useState<
     "잔류 시간표" | "평일 시간표"
   >("잔류 시간표");
   const [open, setOpen] = useState<boolean>(false);
+  const [timetable, setTimeTable] = useState<washerTimetableType>(data);
+
+  const handleEditTimeTable = () => {
+    editWasherTimeTable({
+      laundryId: data._id,
+      sequence: timetable.sequence,
+    }).then((res) => {
+      toast.success("시간표가 수정되었습니다.");
+    });
+  };
+
+  const handleAddTime = () => {
+    setTimeTable([...timetable, null]); // 새로운 타임을 추가합니다.
+  };
+
+  const handleTimeChange = (time: Dayjs | null, index: number) => {
+    const newTimetable = [...timetable];
+    newTimetable[index] = time;
+    setTimeTable(newTimetable);
+  };
+
   return (
     <TimeTableContainer>
       <Row
@@ -23,10 +62,6 @@ export default function TimeTableOptionComponent({ name }: { name: string }) {
         onClick={() => setOpen((prev) => !prev)}
       >
         <Row gap={"16px"} align={"center"}>
-          {/* <div onClick={(e) => e.stopPropagation()}>
-            <Switch />
-          </div> */}
-
           <Body $strong $color={"--basic-grade7"}>
             {name}
           </Body>
@@ -74,50 +109,32 @@ export default function TimeTableOptionComponent({ name }: { name: string }) {
             </Col>
             <Col gap={"12px"}>
               <Row align={"center"} justify={"space-between"}>
-                <Body $color={"--basic-grade5"}>시간표 목록</Body>
-                <Row gap={"4px"} align={"center"}>
+                <Body $color={"--basic- grade5"}>시간표 목록</Body>
+                <Row
+                  gap={"4px"}
+                  align={"center"}
+                  onClick={handleAddTime}
+                  style={{ cursor: "pointer" }}
+                >
                   <Body $color={"--basic-grade7"}>타임 추가</Body>
                   <SvgContainer $fill={"--basic-grade7"}>
                     <Add />
                   </SvgContainer>
                 </Row>
               </Row>
-              <Row gap={"20px"} align={"center"}>
-                <FixedWidthLabel>
-                  <Body $color={"--basic-grade7"} $noShrink>
-                    1타임
-                  </Body>
-                </FixedWidthLabel>
-                <InputWithIcon>
-                  <Input
-                    placeholder="시작 일시"
-                    style={{ paddingRight: "40px" }}
+              {timetable.sequence.map((time, index) => (
+                <Row gap={"20px"} align={"center"} key={index}>
+                  <FixedWidthLabel>
+                    <Body $color={"--basic-grade7"} $noShrink>
+                      {`${index + 1}타임`}
+                    </Body>
+                  </FixedWidthLabel>
+                  <TimePicker
+                    value={dayjs(time)}
+                    onChange={(time, string) => handleTimeChange(string, index)}
                   />
-                  <IconWrapper>
-                    <SvgContainer $fill={"--basic-grade5"}>
-                      <Schedule />
-                    </SvgContainer>
-                  </IconWrapper>
-                </InputWithIcon>
-              </Row>
-              <Row gap={"20px"} align={"center"}>
-                <FixedWidthLabel>
-                  <Body $color={"--basic-grade7"} $noShrink>
-                    2타임
-                  </Body>
-                </FixedWidthLabel>
-                <InputWithIcon>
-                  <Input
-                    placeholder="시작 일시"
-                    style={{ paddingRight: "40px" }}
-                  />
-                  <IconWrapper>
-                    <SvgContainer $fill={"--basic-grade5"}>
-                      <Schedule />
-                    </SvgContainer>
-                  </IconWrapper>
-                </InputWithIcon>
-              </Row>
+                </Row>
+              ))}
             </Col>
           </Col>
         </>
@@ -130,21 +147,6 @@ const TimeTableContainer = styled.div`
   border-radius: 12px;
   background-color: var(--basic-grade2);
   overflow: auto;
-`;
-
-const InputWithIcon = styled.div`
-  position: relative;
-  width: 100%;
-`;
-
-const IconWrapper = styled.div`
-  position: absolute;
-  right: 20px;
-  top: 50%;
-  transform: translateY(-50%);
-  display: flex;
-  align-items: center;
-  pointer-events: none;
 `;
 
 const FixedWidthLabel = styled.div`

@@ -10,11 +10,11 @@ import { washerType } from "@/lib/types/laundry";
 
 interface WasherListProps {
   washers: washerType[];
-  selectedWasher: string | null;
-  setSelectedWasher: (washer: string | null) => void;
+  selectedWasher: washerType | null;
+  setSelectedWasher: (washer: washerType | null) => void;
 }
 function getWasherName(floor: number, position: "L" | "M" | "R"): string {
-  return `${floor}층 ${
+  return `${floor > 10 ? floor - 10 : floor}층 ${
     position === "L"
       ? "왼쪽"
       : position === "M"
@@ -22,7 +22,7 @@ function getWasherName(floor: number, position: "L" | "M" | "R"): string {
       : position === "R"
       ? "오른쪽"
       : ""
-  } 세탁기`;
+  } ${floor > 10 ? "건조기" : "세탁기"}`;
 }
 export default function WasherList({
   washers,
@@ -30,9 +30,9 @@ export default function WasherList({
   setSelectedWasher,
 }: WasherListProps) {
   const [location, setLocation] = useState<"학봉관" | "우정학사">("학봉관");
-  const [openWasher, setOpenWasher] = useState<string | null>(null);
+  const [openWasher, setOpenWasher] = useState<washerType | null>(null);
   const [isAddingWasher, setIsAddingWasher] = useState<boolean>(false);
-  const handleWasherSelect = (washer: string) => {
+  const handleWasherSelect = (washer: washerType) => {
     if (selectedWasher === washer) {
       setSelectedWasher(null);
     } else {
@@ -40,7 +40,7 @@ export default function WasherList({
     }
   };
 
-  const handleToggleOpen = (washer: string) => {
+  const handleToggleOpen = (washer: washerType) => {
     setOpenWasher(openWasher === washer ? null : washer);
   };
 
@@ -118,29 +118,16 @@ export default function WasherList({
 
             {washers
               .filter(
-                (elm) => elm.gender === (location === "학봉관" ? "M" : "F")
+                (elm) => elm._doc.gender === (location === "학봉관" ? "M" : "F")
               )
               .map((washer) => (
                 <WasherOption
-                  key={washer._id}
-                  name={getWasherName(washer.floor, washer.position)}
-                  isSelected={
-                    selectedWasher ===
-                    getWasherName(washer.floor, washer.position)
-                  }
-                  isOpen={
-                    openWasher === getWasherName(washer.floor, washer.position)
-                  }
-                  onSelect={() =>
-                    handleWasherSelect(
-                      getWasherName(washer.floor, washer.position)
-                    )
-                  }
-                  onToggleOpen={() =>
-                    handleToggleOpen(
-                      getWasherName(washer.floor, washer.position)
-                    )
-                  }
+                  key={washer._doc._id}
+                  name={getWasherName(washer._doc.floor, washer._doc.position)}
+                  isSelected={selectedWasher === washer}
+                  isOpen={openWasher === washer}
+                  onSelect={() => handleWasherSelect(washer)}
+                  onToggleOpen={() => handleToggleOpen(washer)}
                 />
               ))}
           </Col>

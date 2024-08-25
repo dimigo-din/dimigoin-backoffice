@@ -9,12 +9,13 @@ import { getWasher } from "@/lib/api/laundry";
 import { washerType } from "@/lib/types/laundry";
 
 export default function Laundry() {
-  const [selectedWasher, setSelectedWasher] = useState<string | null>(null);
+  const [selectedWasher, setSelectedWasher] = useState<washerType | null>(null);
   const [washers, setWashers] = useState<washerType[]>([]);
 
   useEffect(() => {
     getWasher().then((res) => {
       setWashers(res);
+      console.log(res);
     });
   }, []);
   return (

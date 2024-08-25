@@ -1,12 +1,17 @@
 import { Heading, Body, Row, Col } from "@/components/atomic";
-import { getCurrentWasher } from "@/lib/api/laundry";
+import {
+  deleteAllWasherApplication,
+  getCurrentWasher,
+} from "@/lib/api/laundry";
 import {
   currentWasherType,
   washerType,
   washerTimetableType,
   washerApplication,
 } from "@/lib/types/laundry";
+import { Button } from "antd";
 import { useEffect, useState } from "react";
+import { toast } from "react-toastify";
 import styled from "styled-components";
 
 function getWasherName(
@@ -14,7 +19,9 @@ function getWasherName(
   floor: number,
   position: "L" | "M" | "R" | "-"
 ): string {
-  return `${gender === "M" ? "학봉관" : "우정학사"} ${floor}층 ${
+  return `${gender === "M" ? "학봉관" : "우정학사"} ${
+    floor >= 10 ? floor - 10 : floor
+  }층 ${
     position === "L"
       ? "왼쪽"
       : position === "M"
@@ -44,6 +51,11 @@ export default function WasherStatus() {
     return () => clearInterval(int);
   }, []);
 
+  const handleDeleteAll = () => {
+    deleteAllWasherApplication().then((res) => {
+      toast.success("모든 신청이 삭제되었습니다.");
+    });
+  };
   if (!currentWasher) {
     return null; // 데이터를 불러오는 중이거나 데이터가 없는 경우 렌더링하지 않음
   }
@@ -60,6 +72,9 @@ export default function WasherStatus() {
         <Heading $strong color="--basic-grade9">
           세탁 신청 현황
         </Heading>
+        <AccentBtn onClick={() => handleDeleteAll()}>
+          <Body $color={"--basic-grade1"}>모든 예약 초기화</Body>
+        </AccentBtn>
       </Row>
       <ScrollableContent>
         <Col gap="24px">
@@ -155,4 +170,15 @@ const StatusItem = styled(Col).attrs({
   border: ${(props) => props.$selected && "1px solid var(--line-outline)"};
   border-radius: 8px;
   width: calc(20% - 9.6px);
+`;
+const AccentBtn = styled(Button)`
+  background-color: var(--core-status-accent) !important;
+  border-radius: 12px !important;
+  border: none;
+  padding: 16px 0;
+  height: 44px;
+
+  &:hover {
+    background-color: var(--core-status-accent_translucent) !important;
+  }
 `;
