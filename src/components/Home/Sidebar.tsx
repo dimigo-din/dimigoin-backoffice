@@ -6,7 +6,6 @@ import { Body, Col, Label, Row, SvgContainer } from "../atomic";
 import Image from "next/image";
 import Logout from "@material-symbols/svg-300/rounded/logout-fill.svg";
 import LocalLaundryService from "@material-symbols/svg-300/rounded/local_laundry_service.svg";
-import Home from "@material-symbols/svg-300/rounded/home.svg";
 import Run from "@material-symbols/svg-300/rounded/directions_run.svg";
 import Bed from "@material-symbols/svg-300/rounded/bed-fill.svg";
 import Sprint from "@material-symbols/svg-300/rounded/sprint.svg";
@@ -14,6 +13,7 @@ import { Button } from "antd";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { logout } from "@/lib/api/auth";
+import { useCookies } from "next-client-cookies";
 
 function getIconColor(pathname: string, key: string, exact?: boolean): string {
   return (exact ? pathname === "/" + key : pathname.split("/").includes(key))
@@ -21,8 +21,16 @@ function getIconColor(pathname: string, key: string, exact?: boolean): string {
     : "--basic-grade7";
 }
 
+function base64ToBytes(base64: string) {
+  const binString = atob(base64);
+  return Uint8Array.from(Array.from(binString, (char) => char.charCodeAt(0)));
+}
+
 const Sidebar = () => {
   const pathname = usePathname();
+  const cookies = useCookies();
+  const jwtBody = cookies.get("jwt")!.split(".")[1];
+  const userData = JSON.parse(new TextDecoder().decode(base64ToBytes(jwtBody)));
   return (
     <>
       <Container>
@@ -44,9 +52,9 @@ const Sidebar = () => {
                   color={"--basic-grade7"}
                   style={{ whiteSpace: "nowrap" }}
                 >
-                  선생님/학생
+                  선생님
                 </Label>
-                <Body $strong>김디미</Body>
+                <Body $strong>{userData.name}</Body>
               </Col>
               <SvgContainer
                 $fill={"--basic-grade6"}
