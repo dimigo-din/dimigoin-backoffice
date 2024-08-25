@@ -1,60 +1,86 @@
 import { Body, Heading, Row, Col } from "@/components/atomic";
 import { DatePicker, TimePicker } from "antd";
 import { styled } from "styled-components";
-import dayjs from "dayjs";
-import { useState } from "react";
+import dayjs, { Dayjs } from "dayjs";
+import { useState, useEffect } from "react";
 
 interface Duration {
-  start: string;
-  end: string;
+  startDate: Dayjs | null;
+  startTime: Dayjs | null;
+  endDate: Dayjs | null;
+  endTime: Dayjs | null;
 }
 
 interface ApplyPeriodProps {
-  onChange: (durations: Duration[]) => void;
+  onChange: (durations: { start: string; end: string }[]) => void;
 }
 
 export default function ApplyPeriod({ onChange }: ApplyPeriodProps) {
+  const defaultStartTime = dayjs().hour(0).minute(0);
+  const defaultEndTime = dayjs().hour(22).minute(0);
+
   const [durations, setDurations] = useState<Duration[]>([
-    { start: "", end: "" },
-    { start: "", end: "" },
-    { start: "", end: "" },
+    {
+      startDate: dayjs(),
+      startTime: defaultStartTime,
+      endDate: dayjs(),
+      endTime: defaultEndTime,
+    },
+    {
+      startDate: dayjs(),
+      startTime: defaultStartTime,
+      endDate: dayjs(),
+      endTime: defaultEndTime,
+    },
+    {
+      startDate: dayjs(),
+      startTime: defaultStartTime,
+      endDate: dayjs(),
+      endTime: defaultEndTime,
+    },
   ]);
 
-  const handleDateTimeChange = (
+  useEffect(() => {
+    const formattedDurations = durations.map((duration) => {
+      const start =
+        duration.startDate && duration.startTime
+          ? combineDateAndTime(duration.startDate, duration.startTime).format(
+              "YYYY-MM-DD HH:mm:ss"
+            )
+          : "";
+      const end =
+        duration.endDate && duration.endTime
+          ? combineDateAndTime(duration.endDate, duration.endTime).format(
+              "YYYY-MM-DD HH:mm:ss"
+            )
+          : "";
+      return { start, end };
+    });
+    onChange(formattedDurations);
+  }, [durations, onChange]);
+
+  const handleDateChange = (
     grade: number,
-    type: "start" | "end",
-    value: dayjs.Dayjs | null,
-    dateOrTime: "date" | "time"
+    type: "startDate" | "endDate",
+    date: Dayjs | null
   ) => {
     const newDurations = [...durations];
-    const currentDateTime = dayjs(newDurations[grade - 1][type] || undefined);
-
-    let updatedDateTime;
-    if (dateOrTime === "date") {
-      updatedDateTime = value
-        ? value
-            .hour(currentDateTime.hour())
-            .minute(currentDateTime.minute())
-            .second(currentDateTime.second())
-        : null;
-    } else {
-      updatedDateTime = value
-        ? currentDateTime
-            .hour(value.hour())
-            .minute(value.minute())
-            .second(value.second())
-        : null;
-    }
-
-    newDurations[grade - 1] = {
-      ...newDurations[grade - 1],
-      [type]: updatedDateTime
-        ? updatedDateTime.format("YYYY-MM-DD HH:mm:ss")
-        : "",
-    };
-
+    newDurations[grade - 1][type] = date;
     setDurations(newDurations);
-    onChange(newDurations);
+  };
+
+  const handleTimeChange = (
+    grade: number,
+    type: "startTime" | "endTime",
+    time: Dayjs | null
+  ) => {
+    const newDurations = [...durations];
+    newDurations[grade - 1][type] = time;
+    setDurations(newDurations);
+  };
+
+  const combineDateAndTime = (date: Dayjs, time: Dayjs) => {
+    return date.hour(time.hour()).minute(time.minute()).second(time.second());
   };
 
   return (
@@ -78,49 +104,27 @@ export default function ApplyPeriod({ onChange }: ApplyPeriodProps) {
             <Row gap={"12px"} align={"center"}>
               <DatePicker
                 style={{ flex: 1 }}
-                onChange={(date) =>
-                  handleDateTimeChange(grade, "start", date, "date")
-                }
-                value={
-                  durations[grade - 1].start
-                    ? dayjs(durations[grade - 1].start)
-                    : null
-                }
+                onChange={(date) => handleDateChange(grade, "startDate", date)}
+                value={durations[grade - 1].startDate}
               />
               <TimePicker
                 style={{ flex: 1 }}
-                onChange={(time) =>
-                  handleDateTimeChange(grade, "start", time, "time")
-                }
-                value={
-                  durations[grade - 1].start
-                    ? dayjs(durations[grade - 1].start)
-                    : null
-                }
+                onChange={(time) => handleTimeChange(grade, "startTime", time)}
+                value={durations[grade - 1].startTime}
+                format={"HH:mm"}
               />
             </Row>
             <Row gap={"12px"} align={"center"}>
               <DatePicker
                 style={{ flex: 1 }}
-                onChange={(date) =>
-                  handleDateTimeChange(grade, "end", date, "date")
-                }
-                value={
-                  durations[grade - 1].end
-                    ? dayjs(durations[grade - 1].end)
-                    : null
-                }
+                onChange={(date) => handleDateChange(grade, "endDate", date)}
+                value={durations[grade - 1].endDate}
               />
               <TimePicker
                 style={{ flex: 1 }}
-                onChange={(time) =>
-                  handleDateTimeChange(grade, "end", time, "time")
-                }
-                value={
-                  durations[grade - 1].end
-                    ? dayjs(durations[grade - 1].end)
-                    : null
-                }
+                onChange={(time) => handleTimeChange(grade, "endTime", time)}
+                value={durations[grade - 1].endTime}
+                format={"HH:mm"}
               />
             </Row>
           </Col>
