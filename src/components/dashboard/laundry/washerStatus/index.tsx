@@ -1,14 +1,10 @@
 import { Heading, Body, Row, Col } from "@/components/atomic";
 import {
   deleteAllWasherApplication,
-  getCurrentWasher,
+  getWasher as getCurrentWasher,
+  getWasherApplication,
 } from "@/lib/api/laundry";
-import {
-  currentWasherType,
-  washerType,
-  washerTimetableType,
-  washerApplication,
-} from "@/lib/types/laundry";
+import { washerType, washerApplicationType } from "@/lib/types/laundry";
 import { Button } from "antd";
 import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
@@ -34,31 +30,45 @@ function getWasherName(
   } ${floor >= 10 ? "건조기" : "세탁기"}`;
 }
 
-export default function WasherStatus() {
-  const [currentWasher, setCurrentWasher] = useState<currentWasherType | null>(
-    null
-  );
+function isWeekend() {
+  const today = new Date();
+  const day = today.getDay();
+  return day === 0 || day === 6; // 일요일(0) 또는 토요일(6)이라면 주말
+}
 
+export default function WasherStatus() {
+  const [currentWasher, setCurrentWasher] = useState<washerType[] | null>(null);
+  const [application, setApplication] = useState<
+    washerApplicationType[] | null
+  >(null);
+  const [location, setLocation] = useState<"학봉관" | "우정학사">("학봉관");
   useEffect(() => {
     const getWasher = () => {
-      getCurrentWasher().then((res: currentWasherType) => {
+      getCurrentWasher().then((res) => {
         setCurrentWasher(res);
-        console.log(res);
+      });
+
+      getWasherApplication().then((res) => {
+        setApplication(res);
       });
     };
+
     getWasher();
     const int = setInterval(() => getWasher(), 10000);
     return () => clearInterval(int);
   }, []);
 
   const handleDeleteAll = () => {
-    deleteAllWasherApplication().then((res) => {
+    deleteAllWasherApplication().then(() => {
       toast.success("모든 신청이 삭제되었습니다.");
     });
   };
-  if (!currentWasher) {
-    return null; // 데이터를 불러오는 중이거나 데이터가 없는 경우 렌더링하지 않음
+
+  if (!currentWasher || !application) {
+    return null;
   }
+
+  const isWeekendToday = isWeekend();
 
   return (
     <StatusContainer>
@@ -69,59 +79,89 @@ export default function WasherStatus() {
         padding="4px 28px 0px 28px"
         height="80px"
       >
-        <Heading $strong color="--basic-grade9">
-          세탁 신청 현황
-        </Heading>
+        <Row gap={"16px"} align={"center"}>
+          <Heading $strong color="--basic-grade9">
+            세탁 신청 현황
+          </Heading>
+          <Body
+            $color={
+              location === "학봉관" ? "--core-status-accent" : "--basic-grade6"
+            }
+            onClick={() => setLocation("학봉관")}
+            style={{ cursor: "pointer" }}
+          >
+            학봉관
+          </Body>
+          <Body
+            $color={
+              location !== "학봉관" ? "--core-status-accent" : "--basic-grade6"
+            }
+            onClick={() => setLocation("우정학사")}
+            style={{ cursor: "pointer" }}
+          >
+            우정학사
+          </Body>
+        </Row>
+
         <AccentBtn onClick={() => handleDeleteAll()}>
           <Body $color={"--basic-grade1"}>모든 예약 초기화</Body>
         </AccentBtn>
       </Row>
       <ScrollableContent>
         <Col gap="24px">
-          {currentWasher.timetables.map((timetable: washerTimetableType) => {
-            const selectedApplications = currentWasher.applications.filter(
-              (app) => app.timetable._id === timetable._id
-            );
-            return (
-              <StatusGroup key={timetable._id}>
-                <StatusTitle>
-                  {getWasherName(
-                    timetable.gender,
-                    timetable.laundry.floor,
-                    timetable.laundry.position
-                  )}
-                </StatusTitle>
-                <StatusGrid>
-                  {timetable.sequence.map((time, index) => {
-                    const selectedApp = selectedApplications.find(
-                      (app) => app.timetable.sequence[app.time] === time
-                    );
-                    return (
-                      <StatusItem
-                        key={index}
-                        $selected={!!selectedApp}
-                        style={{
-                          backgroundColor: selectedApp
-                            ? "var(--component-fill-standard-primary)"
-                            : "var(--basic-grade2)",
-                        }}
-                      >
-                        <Row justify="space-between">
-                          <Body $color="--basic-grade6">{index + 1}타임</Body>
-                          <Body $color="--basic-grade6">{time}</Body>
-                        </Row>
-                        {selectedApp && (
-                          <Body $color="--basic-grade8">
-                            {selectedApp.student.name}
-                          </Body>
-                        )}
-                      </StatusItem>
-                    );
-                  })}
-                </StatusGrid>
-              </StatusGroup>
-            );
-          })}
+          {currentWasher
+            .filter(
+              (elm) => elm._doc.gender === (location === "학봉관" ? "M" : "F")
+            )
+            .map((washer: washerType) => {
+              const timetable = washer.timetable.find(
+                (t) => t.type === (!isWeekendToday ? 1 : 0)
+              );
+
+              if (!timetable) return null;
+              const selectedApplications = application.filter(
+                (app) => app.timetable._id === timetable._id
+              );
+              return (
+                <StatusGroup key={timetable._id}>
+                  <StatusTitle>
+                    {getWasherName(
+                      timetable.gender,
+                      timetable.laundry.floor,
+                      timetable.laundry.position
+                    )}
+                  </StatusTitle>
+                  <StatusGrid>
+                    {timetable.sequence.map((time, index) => {
+                      const selectedApp = selectedApplications.find(
+                        (app) => app.time === index
+                      );
+                      return (
+                        <StatusItem
+                          key={index}
+                          $selected={!!selectedApp}
+                          style={{
+                            backgroundColor: selectedApp
+                              ? "var(--component-fill-standard-primary)"
+                              : "var(--basic-grade2)",
+                          }}
+                        >
+                          <Row justify="space-between">
+                            <Body $color="--basic-grade6">{index + 1}타임</Body>
+                            <Body $color="--basic-grade6">{time}</Body>
+                          </Row>
+                          {selectedApp && (
+                            <Body $color="--basic-grade8">
+                              {selectedApp.student.name}
+                            </Body>
+                          )}
+                        </StatusItem>
+                      );
+                    })}
+                  </StatusGrid>
+                </StatusGroup>
+              );
+            })}
         </Col>
       </ScrollableContent>
     </StatusContainer>
@@ -171,6 +211,7 @@ const StatusItem = styled(Col).attrs({
   border-radius: 8px;
   width: calc(20% - 9.6px);
 `;
+
 const AccentBtn = styled(Button)`
   background-color: var(--core-status-accent) !important;
   border-radius: 12px !important;

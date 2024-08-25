@@ -1,4 +1,5 @@
 import { Application } from "./stay";
+import { student } from "./student";
 export type washerType = {
   $__: {
     skipId: boolean;
@@ -36,7 +37,8 @@ export type washerStatusType = {
   gender: "M" | "F";
 };
 
-export type washerApplication = Application & {
+export type washerApplicationType = {
+  student: student;
   timetable: washerTimetableType;
   time: number;
 };
@@ -50,6 +52,6 @@ export type washerTimetableType = {
   type: number;
 };
 export type currentWasherType = {
-  applications: washerApplication[];
+  applications: washerApplicationType[];
   timetables: washerTimetableType[];
 };
