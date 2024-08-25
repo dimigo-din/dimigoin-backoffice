@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, {useEffect, useState} from "react";
 import styled from "styled-components";
 import { Body, Col, Label, Row, SvgContainer } from "../atomic";
 import Image from "next/image";
@@ -13,7 +13,7 @@ import { Button } from "antd";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { logout } from "@/lib/api/auth";
-import { useCookies } from "next-client-cookies";
+import {getCookie} from "@/lib/api/cookie";
 
 function getIconColor(pathname: string, key: string, exact?: boolean): string {
   return (exact ? pathname === "/" + key : pathname.split("/").includes(key))
@@ -28,9 +28,13 @@ function base64ToBytes(base64: string) {
 
 const Sidebar = () => {
   const pathname = usePathname();
-  const cookies = useCookies();
-  const jwtBody = cookies.get("jwt")!.split(".")[1];
-  const userData = JSON.parse(new TextDecoder().decode(base64ToBytes(jwtBody)));
+  const [userData, setUserData] = useState({name: ""});
+  const jwtBody = getCookie("jwt").split(".")[1];
+
+  useEffect(() => {
+    setUserData(JSON.parse(new TextDecoder().decode(base64ToBytes(jwtBody))));
+  }, []);
+
   return (
     <>
       <Container>
