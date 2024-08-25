@@ -103,9 +103,9 @@ export default function WasherStatus() {
           </Body>
         </Row>
 
-        <AccentBtn onClick={() => handleDeleteAll()}>
+        {/* <AccentBtn onClick={() => handleDeleteAll()}>
           <Body $color={"--basic-grade1"}>모든 예약 초기화</Body>
-        </AccentBtn>
+        </AccentBtn> */}
       </Row>
       <ScrollableContent>
         <Col gap="24px">
