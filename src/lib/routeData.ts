@@ -7,4 +7,5 @@ export const pathDict: { [key: string]: string } = {
   laundry: "세탁 관리",
   fridayOuting: "금요귀가 관리",
   stayOuting: "잔류외출 관리",
+  studentAdd: "잔류 학생 추가",
 };

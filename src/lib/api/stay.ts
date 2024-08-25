@@ -19,6 +19,55 @@ export const getStayCurrent = async () => {
   return data;
 };
 
+export const addStudentStay = async ({
+  stayId,
+  studentId,
+  seat,
+  reason,
+}: {
+  stayId: string;
+  studentId: string;
+  seat: string;
+  reason: string;
+}) => {
+  console.log({ stayId, studentId, seat, reason });
+  const { data } = await authClient.post(
+    `/manage/stay/${stayId}/${studentId}`,
+    {
+      seat,
+      reason,
+    }
+  );
+  return data;
+};
+
+type StayOutingApiType = {
+  stayId: string;
+  studentId: string;
+  free: boolean;
+  date: string;
+  reason: string;
+  meal: {
+    breakfast: boolean;
+    lunch: boolean;
+    dinner: boolean;
+  };
+  duration: {
+    start: string;
+    end: string;
+  };
+};
+export const addStudentStayOuting = async (
+  stayData: StayOutingApiType,
+  stayId: string,
+  studentId: string
+) => {
+  const { data } = await authClient.post(
+    `/manage/stay/outgo/${stayId}/${studentId}`,
+    stayData
+  );
+  return data;
+};
 export const decideStayOutgo = async ({
   stayOutGoId,
   isApprove,

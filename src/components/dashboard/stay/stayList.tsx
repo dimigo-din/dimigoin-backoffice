@@ -72,6 +72,11 @@ const StayList = ({ refetch }: { refetch: () => void }) => {
                 </Body>
               </Row>
               <ButtonGroup>
+                <Link href={"/dashboard/stay/studentAdd?stayId=" + stay._id}>
+                  <StyledButton>
+                    <Body $color={"--basic-grade8"}>추가</Body>
+                  </StyledButton>
+                </Link>
                 <Link href={"/dashboard/stay/edit?stayId=" + stay._id}>
                   <StyledButton>
                     <Body $color={"--basic-grade8"}>수정</Body>
