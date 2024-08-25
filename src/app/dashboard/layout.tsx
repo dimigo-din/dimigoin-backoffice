@@ -3,6 +3,7 @@ import Sidebar from "@/components/Home/Sidebar";
 import { Col } from "@/components/atomic";
 import Indicator from "@/components/dashboard/indicator";
 import { styled } from "styled-components";
+import {Suspense} from "react";
 
 export default function DashboardLayout({
   children,
@@ -17,7 +18,9 @@ export default function DashboardLayout({
         padding={"24px 0"}
       >
         <Indicator />
-        {children}
+          <Suspense>
+              {children}
+          </Suspense>
       </Col>
     </Container>
   );
