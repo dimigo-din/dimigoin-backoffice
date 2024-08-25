@@ -92,16 +92,15 @@ export const downloadStay = async ({ grade }: { grade: string }) => {
 
   xhr.onload = function (e) {
     if (xhr.status === 200) {
-      var blob = xhr.response;
-      var contentDispo = xhr.getResponseHeader("Content-Disposition");
-      var fileName = `${grade}학년 잔류표.xlsx`; // 기본 파일 이름
-
+      let blob = xhr.response;
+      let contentDispo = xhr.getResponseHeader("Content-Disposition");
+      let fileName = `${grade}학년 잔류표.xlsx`; // 기본 파일 이름
       if (contentDispo) {
-        var matches = contentDispo.match(
+        let matches = contentDispo.match(
           /filename[^;=\n]*=((['"]).*?\2|[^;\n]*)/
         );
         if (matches != null && matches[1]) {
-          fileName = matches[1].replace(/['"]/g, "");
+          fileName = decodeURI(matches[1].replace(/['"]/g, ""));
         }
       }
 
