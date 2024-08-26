@@ -116,7 +116,7 @@ export default function WasherStatus() {
             )
             .map((washer: washerType) => {
               const timetable = washer.timetable.find(
-                (t) => t.type === (!isWeekendToday ? 1 : 0)
+                (t) => t.type === (isWeekendToday ? 1 : 0)
               );
 
               if (!timetable) return null;
