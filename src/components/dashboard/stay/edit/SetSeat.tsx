@@ -1,5 +1,4 @@
 import {
-  SvgContainer,
   Row,
   Heading,
   Body,
@@ -8,7 +7,7 @@ import {
 } from "@/components/atomic";
 import React, { useState, useEffect } from "react";
 import styled from "styled-components";
-import { Radio } from "antd";
+import {Button, Radio} from "antd";
 import { seatType } from "@/lib/types/stay";
 
 interface SeatData {
@@ -291,6 +290,18 @@ const SetSeat: React.FC<SetSeatProps> = ({ onChange, initialSeats }) => {
                   checked={selectedMode === "unblock"}
                   onChange={() => setSelectedMode("unblock")}
                 />
+              </Row>
+            </Option>
+            <Option>
+              <Row gap={"16px"} justify={"space-between"}>
+                <Col gap={"8px"}>
+                  <Body $color={"--basic-grade8"} $strong>
+                    전체 좌석 해제
+                  </Body>
+                  <Button style={{ width: "match-parent" }} onClick={() => setSeatData(generateSeatData())}>
+                    <Body $color={"black"}>전체 해제</Body>
+                  </Button>
+                </Col>
               </Row>
             </Option>
           </OptionGrid>
