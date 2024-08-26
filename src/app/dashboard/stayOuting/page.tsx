@@ -188,10 +188,7 @@ export default function StayOuting() {
               <Col>
                 <Row gap="8px">
                   <Body $color="--content-standard-primary">
-                    {`${elm.student?.grade}${elm.student?.class.toString()}
-                    ${elm.student?.number
-                      .toString()
-                      .padStart(2, "0")}`}
+                    {`${elm.student?.grade}${elm.student?.class.toString()}${elm.student?.number.toString().padStart(2, "0")}`}
                   </Body>
                   <Body $color="--content-standard-primary">
                     {elm.student?.name}
