@@ -189,17 +189,17 @@ export default function OutingAdd() {
           <Row gutter={16}>
             <Col span={8}>
               <Form.Item name={["meal", "breakfast"]} valuePropName="checked">
-                <Checkbox>아침 식사</Checkbox>
+                <Checkbox>아침 식사 취소</Checkbox>
               </Form.Item>
             </Col>
             <Col span={8}>
               <Form.Item name={["meal", "lunch"]} valuePropName="checked">
-                <Checkbox>점심 식사</Checkbox>
+                <Checkbox>점심 식사 취소</Checkbox>
               </Form.Item>
             </Col>
             <Col span={8}>
               <Form.Item name={["meal", "dinner"]} valuePropName="checked">
-                <Checkbox>저녁 식사</Checkbox>
+                <Checkbox>저녁 식사 취소</Checkbox>
               </Form.Item>
             </Col>
           </Row>
