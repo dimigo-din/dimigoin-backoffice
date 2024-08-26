@@ -45,7 +45,6 @@ export default function WasherStatus() {
   useEffect(() => {
     const getWasher = () => {
       getCurrentWasher().then((res) => {
-        console.log(res);
         setCurrentWasher(res);
       });
 

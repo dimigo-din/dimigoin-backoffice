@@ -1,4 +1,4 @@
-import { Body, Col, SvgContainer } from "@/components/atomic";
+import { Body, Col, Label, SvgContainer } from "@/components/atomic";
 import { Row } from "@/components/atomic";
 import styled from "styled-components";
 import Add from "@material-symbols/svg-300/rounded/add.svg";
@@ -28,7 +28,9 @@ export default function TimeTableOptionComponent({
   const [selectedType, setSelectedType] = useState<
     "평일 시간표" | "잔류 시간표"
   >(data.type ? "잔류 시간표" : "평일 시간표");
+
   const [open, setOpen] = useState<boolean>(isNew);
+  const [selectedGrade, setSelectedGrade] = useState<number[]>([]);
   const [timetable, setTimeTable] = useState<(string | null)[]>(data.sequence);
   useEffect(() => {
     if (isNew) {
@@ -51,13 +53,12 @@ export default function TimeTableOptionComponent({
       sequence: validTimetable,
       type: selectedType === "잔류 시간표" ? 1 : 0,
     };
-
     editWasherTimeTable({
       laundryId: washer._doc._id,
       sequence: validTimetable,
       gender: washer._doc.gender,
       type: updatedTimetable.type,
-      grade: data.grade,
+      grade: selectedGrade,
     })
       .then((res) => {
         toast.success("시간표가 수정되었습니다.");
@@ -131,6 +132,34 @@ export default function TimeTableOptionComponent({
                     >
                       {value}
                     </Body>
+                  </Row>
+                ))}
+              </Row>
+            </Col>
+            <Col gap={"12px"}>
+              <Body $color={"--basic-grade5"}>이용 가능 학년</Body>
+              <Row gap={"20px"}>
+                {[1, 2, 3].map((elm: number) => (
+                  <Row gap={"4px"} key={elm}>
+                    <Checkbox
+                      value={selectedGrade.includes(elm)}
+                      onChange={(e) => {
+                        if (e.target.checked === true) {
+                          if (selectedGrade.includes(elm))
+                            setSelectedGrade(
+                              selectedGrade.filter((item) => item !== elm)
+                            );
+                          else {
+                            const copy: number[] = [...selectedGrade];
+                            copy.push(elm);
+                            setSelectedGrade(copy);
+                          }
+                        }
+                      }}
+                    />
+                    <Label $color={"--content-standard-primary"}>
+                      {elm}학년
+                    </Label>
                   </Row>
                 ))}
               </Row>

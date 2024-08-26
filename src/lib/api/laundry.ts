@@ -36,6 +36,7 @@ type washerTimetableApiType = {
 export const editWasherTimeTable = async (
   timetable: washerTimetableApiType
 ) => {
+  console.log(timetable);
   const { data } = await authClient.put("/manage/laundry/timetable", timetable);
   return data;
 };
