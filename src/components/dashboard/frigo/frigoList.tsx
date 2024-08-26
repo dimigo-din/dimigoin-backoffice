@@ -94,11 +94,9 @@ export default function FrigoList({
                     </Button>
                     <Button
                         onClick={() => {
-                          data.applications.forEach((elm) => {
                             try {
                               downloadFrigo(data.frigo._id);
                             } catch {}
-                          });
                         }}
                         style={{ border: "1px solid var(--line-outline)" }}
                     >
