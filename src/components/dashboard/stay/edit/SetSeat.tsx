@@ -143,13 +143,6 @@ const SetSeat: React.FC<SetSeatProps> = ({ onChange, initialSeats }) => {
               seats[key].push(seatLabel);
             }
           }
-        }else {
-          const gender = seat.status.startsWith("male") ? "M" : "F";
-          const grade = seat.status.startsWith("male") ? seat.status.substring(4, 5) : seat.status.substring(6, 7);
-          const key = `${gender}${grade}` as keyof seatType;
-          if (key !== "_id") {
-            seats[key].push("NONE");
-          }
         }
       });
     });
