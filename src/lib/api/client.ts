@@ -31,8 +31,7 @@ authClient.interceptors.request.use(
 );
 
 authClient.interceptors.response.use(
-  (response) => response,
-  async (error: AxiosError) => {
+  (response) => response, (error: AxiosError) => {
     if (error.response?.status === 401) {
       const refreshToken = getCookie("refresh");
       refreshJWT({ token: refreshToken }).catch((e) => {
