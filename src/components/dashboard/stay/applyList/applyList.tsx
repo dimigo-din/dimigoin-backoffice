@@ -18,7 +18,6 @@ const ApplyList = ({ applications }: { applications: Application[] }) => {
     const gradeNumber = parseInt(grade);
     return app.student.grade === gradeNumber;
   });
-
   const handleDownload = () => {
     if (grade === "전체") {
       downloadStay({ grade: "1" });
@@ -28,7 +27,6 @@ const ApplyList = ({ applications }: { applications: Application[] }) => {
     }
     downloadStay({ grade: grade[0] });
   };
-
   return (
     <Container>
       <Col $fullh>

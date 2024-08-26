@@ -1,25 +1,28 @@
 import { Body, Col, Row } from "@/components/atomic";
+import { deleteStudentStay } from "@/lib/api/stay";
 import { Application } from "@/lib/types/stay";
+import { toast } from "react-toastify";
 import { styled } from "styled-components";
+import Swal from "sweetalert2";
 
 interface GroupedStudents {
   [key: string]: {
-    male: string[];
-    female: string[];
+    male: Application[];
+    female: Application[];
   };
 }
 
 const DataList = ({ applications }: { applications: Application[] }) => {
   const groupStudents = (apps: Application[]): GroupedStudents => {
-    return apps.reduce((acc: GroupedStudents, student) => {
-      const key = `${student.student.grade}학년 ${student.student.class}반`;
+    return apps.reduce((acc: GroupedStudents, application) => {
+      const key = `${application.student.grade}학년 ${application.student.class}반`;
       if (!acc[key]) {
         acc[key] = { male: [], female: [] };
       }
-      if (student.student.gender === "M") {
-        acc[key].male.push(student.student.name);
+      if (application.student.gender === "M") {
+        acc[key].male.push(application);
       } else {
-        acc[key].female.push(student.student.name);
+        acc[key].female.push(application);
       }
       return acc;
     }, {});
@@ -27,7 +30,6 @@ const DataList = ({ applications }: { applications: Application[] }) => {
 
   const groupedStudents = groupStudents(applications);
 
-  // 키를 학년과 반 순으로 정렬하는 함수
   const sortKeys = (a: string, b: string): number => {
     const [gradeA, classA] = a.split("학년 ");
     const [gradeB, classB] = b.split("학년 ");
@@ -38,6 +40,29 @@ const DataList = ({ applications }: { applications: Application[] }) => {
   };
 
   const sortedKeys = Object.keys(groupedStudents).sort(sortKeys);
+
+  const handleDeleteStudent = (
+    stayId: string,
+    studentId: string,
+    name: string
+  ) => {
+    Swal.fire({
+      title: "정말로 삭제하실건가요?",
+      text: `학생 ${name}의 잔류를 삭제합니다.`,
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "지우기",
+      cancelButtonText: "취소",
+    }).then((res) => {
+      if (res.isConfirmed) {
+        deleteStudentStay({ stayId, studentId }).then(() => {
+          toast.success("학생의 잔류가 삭제되었습니다.");
+        });
+      }
+    });
+  };
 
   return (
     <Col gap={"12px"} padding={"0px 24px 24px 24px"}>
@@ -63,7 +88,21 @@ const DataList = ({ applications }: { applications: Application[] }) => {
                       남자
                     </Body>
                     <WrappingBody $color={"--basic-grade8"}>
-                      {students.male.join(", ")}
+                      {students.male.map((app, idx) => (
+                        <div
+                          key={app._id}
+                          onClick={() =>
+                            handleDeleteStudent(
+                              app.stay,
+                              app.student._id,
+                              app.student.name
+                            )
+                          }
+                        >
+                          {app.student.name}
+                          {idx < students.male.length - 1 && ", "}
+                        </div>
+                      ))}
                     </WrappingBody>
                   </Row>
                 )}
@@ -73,7 +112,21 @@ const DataList = ({ applications }: { applications: Application[] }) => {
                       여자
                     </Body>
                     <WrappingBody $color={"--basic-grade8"}>
-                      {students.female.join(", ")}
+                      {students.female.map((app, idx) => (
+                        <div
+                          key={app._id}
+                          onClick={() =>
+                            handleDeleteStudent(
+                              app.stay,
+                              app.student._id,
+                              app.student.name
+                            )
+                          }
+                        >
+                          {app.student.name}
+                          {idx < students.female.length - 1 && ", "}
+                        </div>
+                      ))}
                     </WrappingBody>
                   </Row>
                 )}
@@ -107,4 +160,9 @@ const ContentCol = styled(Col)`
 const WrappingBody = styled(Body)`
   word-break: break-all;
   flex: 1;
+
+  & > div {
+    display: inline;
+    cursor: pointer;
+  }
 `;

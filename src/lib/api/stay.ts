@@ -41,6 +41,19 @@ export const addStudentStay = async ({
   return data;
 };
 
+export const deleteStudentStay = async ({
+  stayId,
+  studentId,
+}: {
+  stayId: string;
+  studentId: string;
+}) => {
+  const { data } = await authClient.delete(
+    `/manage/stay/${stayId}/${studentId}`
+  );
+  return data;
+};
+
 type StayOutingApiType = {
   stayId: string;
   studentId: string;
@@ -62,6 +75,7 @@ export const addStudentStayOuting = async (
   stayId: string,
   studentId: string
 ) => {
+  console.log(stayData);
   const { data } = await authClient.post(
     `/manage/stay/outgo/${stayId}/${studentId}`,
     stayData

@@ -63,7 +63,7 @@ export default function Add() {
     addStudentStay({
       stayId: studentData.stayId!,
       studentId: studentData.studentId,
-      seat: selectedSeat || "",
+      seat: selectedSeat || "NONE",
       reason: selectedSeat ? reason : "기타",
     }).then((res) => {
       toast.success("추가되었습니다.");
