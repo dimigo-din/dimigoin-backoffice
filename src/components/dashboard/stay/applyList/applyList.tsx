@@ -1,5 +1,5 @@
 "use client";
-import { Heading, Body, SvgContainer, Col } from "@/components/atomic";
+import {Heading, Body, SvgContainer, Col, Caption, Label} from "@/components/atomic";
 import { Button } from "antd";
 import { Row } from "@/components/atomic";
 import { styled } from "styled-components";
@@ -8,6 +8,7 @@ import DataList from "./dataList";
 import { useEffect, useState } from "react";
 import { downloadStay, getStay } from "@/lib/api/stay";
 import { Application } from "@/lib/types/stay";
+import {Text} from "domelementtype";
 export type GradeType = "전체" | "1학년" | "2학년" | "3학년";
 
 const ApplyList = ({ applications }: { applications: Application[] }) => {
@@ -34,6 +35,9 @@ const ApplyList = ({ applications }: { applications: Application[] }) => {
           <Row $fullw justify={"space-between"} align={"center"}>
             <Heading $strong color={"--basic-grade9"}>
               신청자 목록
+              <Label style={{color: "gray"}}>
+                &nbsp;&nbsp;이름을 클릭하시면 잔류를 취소시킬 수 있습니다.
+              </Label>
             </Heading>
             <Button
               size="large"
