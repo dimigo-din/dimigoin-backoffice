@@ -15,7 +15,6 @@ export default function Laundry() {
   useEffect(() => {
     getWasher().then((res) => {
       setWashers(res);
-      console.log(res);
     });
   }, []);
   return (

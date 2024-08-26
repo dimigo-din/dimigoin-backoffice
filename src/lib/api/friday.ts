@@ -1,6 +1,6 @@
 import { currentFrigoType, frigoType } from "../types/friday";
 import authClient from "./client";
-import {getCookie} from "@/lib/api/cookie";
+import { getCookie } from "@/lib/api/cookie";
 
 export const getFridayCurrentOuting = async () => {
   const res = await authClient.get<currentFrigoType>("/manage/frigo/current");
@@ -55,9 +55,9 @@ export const downloadFrigo = async (frigoId: string) => {
 
   var xhr = new XMLHttpRequest();
   xhr.open(
-      "GET",
-      `${process.env.NEXT_PUBLIC_API_BASE_URL}/manage/frigo/${frigoId}/excel`,
-      true
+    "GET",
+    `${process.env.NEXT_PUBLIC_API_BASE_URL}/manage/frigo/${frigoId}/excel`,
+    true
   );
   // 액세스 토큰을 요청 헤더에 포함
   xhr.setRequestHeader("Authorization", `Bearer ${accessToken}`);
@@ -70,7 +70,7 @@ export const downloadFrigo = async (frigoId: string) => {
       let fileName = `3학년 금요귀가표.xlsx`; // 기본 파일 이름
       if (contentDispo) {
         let matches = contentDispo.match(
-            /filename[^;=\n]*=((['"]).*?\2|[^;\n]*)/
+          /filename[^;=\n]*=((['"]).*?\2|[^;\n]*)/
         );
         if (matches != null && matches[1]) {
           fileName = decodeURI(matches[1].replace(/['"]/g, ""));
@@ -98,4 +98,3 @@ export const downloadFrigo = async (frigoId: string) => {
     }, 0);
   }
 };
-

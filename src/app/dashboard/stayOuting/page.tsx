@@ -81,7 +81,7 @@ export default function StayOuting() {
   const handleDecision = async (isApprove: boolean, stayOutGoId: string) => {
     try {
       await decideStayOutgo({ stayOutGoId, isApprove });
-      await fetchStayCurrent(); // Refetch data after decision
+      await fetchStayCurrent();
     } catch (error) {
       console.error("Error making decision:", error);
     }

@@ -36,18 +36,12 @@ function getIconColor(pathname: string, key: string, exact?: boolean): string {
     : "--basic-grade7";
 }
 
-function base64ToBytes(base64: string) {
-  const binString = atob(base64);
-  return Uint8Array.from(Array.from(binString, (char) => char.charCodeAt(0)));
-}
-
 const Sidebar = () => {
   const pathname = usePathname();
   const [profile, setProfile] = useState<student | null>(null);
   useEffect(() => {
     const jwt = getCookie("jwt");
     setProfile(parseJwt(jwt));
-    console.log(parseJwt(jwt));
   }, []);
   return (
     <>

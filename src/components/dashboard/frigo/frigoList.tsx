@@ -10,12 +10,12 @@ import { Button } from "antd";
 import { useState, useEffect, useCallback } from "react";
 import styled from "styled-components";
 import RefreshOutlined from "@material-symbols/svg-300/rounded/refresh.svg";
-import {decideFrigo, downloadFrigo} from "@/lib/api/friday";
+import { decideFrigo, downloadFrigo } from "@/lib/api/friday";
 
 export default function FrigoList({
-                                    data,
-                                    refetch,
-                                  }: {
+  data,
+  refetch,
+}: {
   data: currentFrigoType | null;
   refetch: () => void;
 }) {
@@ -60,126 +60,122 @@ export default function FrigoList({
   }, [data, handleRefresh]);
 
   return (
-      <Container>
-        <HeaderWrapper>
-          <Row justify="space-between" align="center" style={{ width: "100%" }}>
-            <Row gap={"8px"} align={"center"}>
-              <Heading $color="--content-standard-primary">
-                {data ? data.frigo.date : "현재 금요귀가 신청이 없습니다."}
-              </Heading>
-              {data && (
-                  <>
-                    <AccentBtn
-                        onClick={() => {
-                          data.applications.forEach((elm) => {
-                            try {
-                              handleDecision(true, elm.student._id);
-                            } catch {}
-                          });
-                        }}
-                    >
-                      <Body $color="--basic-grade1">전원 허가</Body>
-                    </AccentBtn>
-                    <Button
-                        onClick={() => {
-                          data.applications.forEach((elm) => {
-                            try {
-                              handleDecision(false, elm.student._id);
-                            } catch {}
-                          });
-                        }}
-                        style={{ border: "1px solid var(--line-outline)" }}
-                    >
-                      <Body>전원 반려</Body>
-                    </Button>
-                    <Button
-                        onClick={() => {
-                          data.applications.forEach((elm) => {
-                            try {
-                              downloadFrigo(data.frigo._id);
-                            } catch {}
-                          });
-                        }}
-                        style={{ border: "1px solid var(--line-outline)" }}
-                    >
-                      <Body>다운로드</Body>
-                    </Button>
-                  </>
-              )}
-            </Row>
-
+    <Container>
+      <HeaderWrapper>
+        <Row justify="space-between" align="center" style={{ width: "100%" }}>
+          <Row gap={"8px"} align={"center"}>
+            <Heading $color="--content-standard-primary">
+              {data ? data.frigo.date : "현재 금요귀가 신청이 없습니다."}
+            </Heading>
             {data && (
-                <Row gap="8px" align="center">
-                  <Body $color="--content-standard-secondary">
-                    {remainingSeconds}초
-                  </Body>
-                  <RefreshButton onClick={handleRefresh}>
-                    <SvgContainer $fill={"--basic-grade8"}>
-                      <RefreshOutlined />
-                    </SvgContainer>
-                  </RefreshButton>
-                </Row>
+              <>
+                <AccentBtn
+                  onClick={() => {
+                    data.applications.forEach((elm) => {
+                      try {
+                        handleDecision(true, elm.student._id);
+                      } catch {}
+                    });
+                  }}
+                >
+                  <Body $color="--basic-grade1">전원 허가</Body>
+                </AccentBtn>
+                <Button
+                  onClick={() => {
+                    data.applications.forEach((elm) => {
+                      try {
+                        handleDecision(false, elm.student._id);
+                      } catch {}
+                    });
+                  }}
+                  style={{ border: "1px solid var(--line-outline)" }}
+                >
+                  <Body>전원 반려</Body>
+                </Button>
+                <Button
+                  onClick={() => {
+                    downloadFrigo(data.frigo._id);
+                  }}
+                  style={{ border: "1px solid var(--line-outline)" }}
+                >
+                  <Body>다운로드</Body>
+                </Button>
+              </>
             )}
           </Row>
-        </HeaderWrapper>
-        <ScrollableContent>
-          {data &&
-              data.applications.map((elm) => (
-                  <Row
-                      key={elm._id}
-                      justify="space-between"
-                      style={{ marginBottom: "8px" }}
+
+          {data && (
+            <Row gap="8px" align="center">
+              <Body $color="--content-standard-secondary">
+                {remainingSeconds}초
+              </Body>
+              <RefreshButton onClick={handleRefresh}>
+                <SvgContainer $fill={"--basic-grade8"}>
+                  <RefreshOutlined />
+                </SvgContainer>
+              </RefreshButton>
+            </Row>
+          )}
+        </Row>
+      </HeaderWrapper>
+      <ScrollableContent>
+        {data &&
+          data.applications.map((elm) => (
+            <Row
+              key={elm._id}
+              justify="space-between"
+              style={{ marginBottom: "8px" }}
+            >
+              <Row gap="8px">
+                <Row gap="4px">
+                  <Body $color="--content-standard-primary">
+                    {`${elm.student?.grade}${
+                      elm.student?.class
+                    }${elm.student?.number.toString().padEnd(2, "0")}`}
+                  </Body>
+                  <Body $color="--content-standard-primary">
+                    {elm.student?.name}
+                  </Body>
+                </Row>
+                <Row gap={"8px"}>
+                  <Body $color="--content-standard-secondary">
+                    {elm.reason}
+                  </Body>
+                  <Body
+                    $color={
+                      elm.status === "W"
+                        ? "--core-status-warning"
+                        : elm.status === "A"
+                        ? "--solid-green"
+                        : "--solid-pink"
+                    }
+                    $strong
                   >
-                    <Row gap="8px">
-                      <Row gap="4px">
-                        <Body $color="--content-standard-primary">
-                          {`${elm.student?.grade}${
-                              elm.student?.class
-                          }${elm.student?.number.toString().padEnd(2, "0")}`}
-                        </Body>
-                        <Body $color="--content-standard-primary">
-                          {elm.student?.name}
-                        </Body>
-                      </Row>
-                      <Row gap={"8px"}>
-                        <Body $color="--content-standard-secondary">
-                          {elm.reason}
-                        </Body>
-                        <Body
-                            $color={
-                              elm.status === "W"
-                                  ? "--core-status-warning"
-                                  : elm.status === "A"
-                                      ? "--solid-green"
-                                      : "--solid-pink"
-                            }
-                            $strong
-                        >
-                          {elm.status === "W"
-                              ? "대기"
-                              : elm.status === "A"
-                                  ? "승인"
-                                  : "반려"}
-                        </Body>
-                      </Row>
-                    </Row>
-                    <Row gap="4px">
-                      <AccentBtn
-                          onClick={() => handleDecision(true, elm.student._id)}
-                      >
-                        <Body $color="--basic-grade1">허가</Body>
-                      </AccentBtn>
-                      <Button
-                          onClick={() => handleDecision(false, elm.student._id)}
-                          style={{ border: "1px solid var(--line-outline)" }}
-                      >
-                        <Body>반려</Body>
-                      </Button>
-                    </Row>
-                  </Row>
-              ))}
-        </ScrollableContent>
-      </Container>
+                    {elm.status === "W"
+                      ? "대기"
+                      : elm.status === "A"
+                      ? "승인"
+                      : "반려"}
+                  </Body>
+                </Row>
+              </Row>
+              <Row gap="4px">
+                <AccentBtn
+                  onClick={() => handleDecision(true, elm.student._id)}
+                >
+                  <Body $color="--basic-grade1">허가</Body>
+                </AccentBtn>
+                <Button
+                  onClick={() => handleDecision(false, elm.student._id)}
+                  style={{ border: "1px solid var(--line-outline)" }}
+                >
+                  <Body>반려</Body>
+                </Button>
+              </Row>
+            </Row>
+          ))}
+      </ScrollableContent>
+    </Container>
   );
 }
 

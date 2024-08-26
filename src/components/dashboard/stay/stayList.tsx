@@ -7,6 +7,7 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import { deleteStay, getStay, setStay, unSetStay } from "@/lib/api/stay";
 import { stayType } from "@/lib/types/stay";
+import Swal from "sweetalert2";
 
 const StayList = ({ refetch }: { refetch: () => void }) => {
   const [stayList, setStayList] = useState<stayType[]>([]);
@@ -17,9 +18,22 @@ const StayList = ({ refetch }: { refetch: () => void }) => {
   }, []);
 
   const handleStayDelete = (id: string) => {
-    deleteStay({ id }).then((res) => {
-      toast.success("잔류가 삭제되었습니다.");
-      refetch();
+    Swal.fire({
+      title: "정말로 삭제하실건가요?",
+      text: `신중하게 선택해주세요.`,
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "지우기",
+      cancelButtonText: "취소",
+    }).then((res) => {
+      if (res.isConfirmed) {
+        deleteStay({ id }).then((res) => {
+          toast.success("잔류가 삭제되었습니다.");
+          refetch();
+        });
+      }
     });
   };
 

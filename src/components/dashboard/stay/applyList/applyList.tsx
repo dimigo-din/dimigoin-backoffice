@@ -1,5 +1,5 @@
 "use client";
-import { Heading, Body, SvgContainer, Col } from "@/components/atomic";
+import { Heading, Body, SvgContainer, Col, Label } from "@/components/atomic";
 import { Button } from "antd";
 import { Row } from "@/components/atomic";
 import { styled } from "styled-components";
@@ -32,9 +32,15 @@ const ApplyList = ({ applications }: { applications: Application[] }) => {
       <Col $fullh>
         <Col padding={"20px 28px"} gap={"8px"}>
           <Row $fullw justify={"space-between"} align={"center"}>
-            <Heading $strong color={"--basic-grade9"}>
-              신청자 목록
-            </Heading>
+            <Row gap={"8px"} align={"end"}>
+              <Heading $strong color={"--basic-grade9"}>
+                신청자 목록
+              </Heading>
+              <Label $color={"--basic-grade6"}>
+                이름을 눌러 삭제할 수 있습니다.
+              </Label>
+            </Row>
+
             <Button
               size="large"
               style={{
