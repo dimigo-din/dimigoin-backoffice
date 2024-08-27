@@ -30,6 +30,33 @@ export const deleteFrigo = async ({ id }: { id: string }) => {
   return data;
 };
 
+export const addStudentFrigo = async ({
+  frigoId,
+  studentId,
+  reason,
+}: {
+  frigoId: string;
+  studentId: string;
+  reason: string;
+}) => {
+  const { data } = await authClient.put(
+    `/manage/frigo/${frigoId}/${studentId}?reason=${reason}`
+  );
+  return data;
+};
+
+export const deleteStudentFrigo = async ({
+  frigoId,
+  studentId,
+}: {
+  frigoId: string;
+  studentId: string;
+}) => {
+  const { data } = await authClient.delete(
+    `/manage/frigo/${frigoId}/${studentId}`
+  );
+  return data;
+};
 export const decideFrigo = async ({
   frigoId,
   studentId,

@@ -10,7 +10,12 @@ import { Button } from "antd";
 import { useState, useEffect, useCallback } from "react";
 import styled from "styled-components";
 import RefreshOutlined from "@material-symbols/svg-300/rounded/refresh.svg";
-import { decideFrigo, downloadFrigo } from "@/lib/api/friday";
+import {
+  decideFrigo,
+  deleteStudentFrigo,
+  downloadFrigo,
+} from "@/lib/api/friday";
+import Swal from "sweetalert2";
 
 export default function FrigoList({
   data,
@@ -27,6 +32,28 @@ export default function FrigoList({
       isApproved: ok,
     }).then((res) => {
       refetch();
+    });
+  };
+
+  const handleDelete = (name: string, studentId: string) => {
+    if (!data) return;
+    Swal.fire({
+      title: "정말로 삭제하실건가요?",
+      text: `학생 ${name}의 금요귀가 신청을 삭제합니다.`,
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "지우기",
+      cancelButtonText: "취소",
+    }).then((res) => {
+      if (res.isConfirmed) {
+        deleteStudentFrigo({ frigoId: data?.frigo._id, studentId }).then(
+          (res) => {
+            refetch();
+          }
+        );
+      }
     });
   };
 
@@ -171,6 +198,13 @@ export default function FrigoList({
                 >
                   <Body>반려</Body>
                 </Button>
+                <AccentBtn
+                  onClick={() =>
+                    handleDelete(elm.student.name, elm.student._id)
+                  }
+                >
+                  <Body $color="--basic-grade1">삭제</Body>
+                </AccentBtn>
               </Row>
             </Row>
           ))}
