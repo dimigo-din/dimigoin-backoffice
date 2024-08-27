@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useSearchParams } from "next/navigation";
 import {
   Input,
   Button,
@@ -14,12 +14,14 @@ import {
   Typography,
   Row,
   Col,
+  List,
 } from "antd";
 import styled from "styled-components";
 import { getAllStudent } from "@/lib/api/student";
 import { student } from "@/lib/types/student";
 import { addStudentStayOuting } from "@/lib/api/stay";
-import dayjs from "dayjs";
+import dayjs, { Dayjs } from "dayjs";
+import { Body } from "@/components/atomic";
 
 const { Title } = Typography;
 
@@ -48,6 +50,16 @@ export default function OutingAdd() {
   const [students, setStudents] = useState<student[] | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
   const [isFreeOuting, setIsFreeOuting] = useState<boolean>(false);
+  const [searchName, setSearchName] = useState<string>("");
+  const [filteredStudents, setFilteredStudents] = useState<student[]>([]);
+  const [selectedStudent, setSelectedStudent] = useState<student | null>(null);
+  const [duration, setDuration] = useState<{
+    start: Dayjs | null;
+    end: Dayjs | null;
+  }>({
+    start: null,
+    end: null,
+  });
 
   useEffect(() => {
     setLoading(true);
@@ -58,57 +70,51 @@ export default function OutingAdd() {
       .finally(() => setLoading(false));
   }, []);
 
-  const handleSubmit = async (values: any) => {
-    if (!students) {
-      notification.error({
-        message: "학생 정보를 불러오는 중입니다.",
-        description: "잠시 후 다시 시도하세요.",
-      });
-      return;
+  const handleNameSearch = (value: string) => {
+    setSearchName(value);
+    if (students) {
+      const filtered = students.filter((student) =>
+        student.name.toLowerCase().includes(value.toLowerCase())
+      );
+      setFilteredStudents(filtered);
     }
+  };
 
-    const {
-      grade,
-      classNumber,
-      studentNumber,
-      reason,
-      outingDay,
-      free,
-      meal,
-      duration,
-    } = values;
+  const handleStudentSelect = (student: student) => {
+    setSelectedStudent(student);
+    setFilteredStudents([]);
+    setSearchName("");
+    form.setFieldsValue({
+      studentName: student.name,
+    });
+  };
 
-    const selectedStudent = students.find(
-      (student) =>
-        student.grade.toString() === grade &&
-        student.class.toString() === classNumber &&
-        student.number.toString() === studentNumber
-    );
-
+  const handleSubmit = async (values: any) => {
     if (!selectedStudent) {
       notification.error({
-        message: "학생을 찾을 수 없습니다.",
-        description: "정보를 다시 확인하세요.",
+        message: "학생을 선택해주세요.",
+        description: "학생 이름을 검색하고 목록에서 선택하세요.",
       });
       return;
     }
+
+    const { reason, outingDay, free, meal } = values;
+
     const studentData: StayOutingApiType = {
       studentId: selectedStudent._id,
       stayId: stayId as string,
       date: dayjs(outingDay).format("YYYY-MM-DD"),
-      free: free,
+      free: free ?? false,
       meal: {
         breakfast: meal?.breakfast || false,
         lunch: meal?.lunch || false,
         dinner: meal?.dinner || false,
       },
       duration: {
-        start: duration?.start
-          ? dayjs(duration.start).format("YYYY-MM-DD HH:mm:ss")
+        start: duration.start
+          ? duration.start.format("YYYY-MM-DD HH:mm:ss")
           : "",
-        end: duration?.end
-          ? dayjs(duration.end).format("YYYY-MM-DD HH:mm:ss")
-          : "",
+        end: duration.end ? duration.end.format("YYYY-MM-DD HH:mm:ss") : "",
       },
       reason: reason ?? "",
     };
@@ -121,6 +127,8 @@ export default function OutingAdd() {
         description: "학생의 외출 정보가 성공적으로 추가되었습니다.",
       });
       form.resetFields();
+      setSelectedStudent(null);
+      setDuration({ start: null, end: null });
     } catch (error) {
       notification.error({
         message: "추가 실패",
@@ -140,11 +148,7 @@ export default function OutingAdd() {
           onFinish={handleSubmit}
           layout="vertical"
           initialValues={{
-            outingDay: dayjs(), // Set default value to today
-            duration: {
-              start: dayjs(),
-              end: dayjs().add(1, "hour"),
-            },
+            outingDay: dayjs(),
           }}
           onValuesChange={(changedValues) => {
             if (changedValues.free !== undefined) {
@@ -152,35 +156,44 @@ export default function OutingAdd() {
             }
           }}
         >
-          <Row gutter={16}>
-            <Col span={8}>
-              <Form.Item
-                name="grade"
-                label="학년"
-                rules={[{ required: true, message: "학년을 입력하세요" }]}
-              >
-                <Input placeholder="학년을 입력하세요" />
-              </Form.Item>
-            </Col>
-            <Col span={8}>
-              <Form.Item
-                name="classNumber"
-                label="반"
-                rules={[{ required: true, message: "반을 입력하세요" }]}
-              >
-                <Input placeholder="반을 입력하세요" />
-              </Form.Item>
-            </Col>
-            <Col span={8}>
-              <Form.Item
-                name="studentNumber"
-                label="번호"
-                rules={[{ required: true, message: "번호를 입력하세요" }]}
-              >
-                <Input placeholder="번호를 입력하세요" />
-              </Form.Item>
-            </Col>
-          </Row>
+          <Form.Item
+            name="studentName"
+            label="학생 이름"
+            rules={[{ required: true, message: "학생 이름을 입력하세요" }]}
+          >
+            <Input
+              placeholder="학생 이름을 입력하세요"
+              value={searchName}
+              onChange={(e) => handleNameSearch(e.target.value)}
+            />
+          </Form.Item>
+
+          {filteredStudents.length > 0 && !!searchName && (
+            <List
+              size="small"
+              bordered
+              dataSource={filteredStudents}
+              renderItem={(student) => (
+                <List.Item
+                  key={student._id}
+                  actions={[
+                    <AccentBtn onClick={() => handleStudentSelect(student)}>
+                      <Body $color={"--basic-grade1"}>선택</Body>
+                    </AccentBtn>,
+                  ]}
+                >
+                  {`${student.name} (${student.grade}학년 ${student.class}반 ${student.number}번)`}
+                </List.Item>
+              )}
+            />
+          )}
+
+          {selectedStudent && (
+            <p>
+              선택된 학생: {selectedStudent.name} ({selectedStudent.grade}학년{" "}
+              {selectedStudent.class}반 {selectedStudent.number}번)
+            </p>
+          )}
 
           <Form.Item name="free" valuePropName="checked" label="자기계발 외출">
             <Checkbox>자기계발 외출</Checkbox>
@@ -218,7 +231,6 @@ export default function OutingAdd() {
                 <Input.TextArea placeholder="외출 사유" />
               </Form.Item>
               <Form.Item
-                name="duration"
                 label="외출 시간"
                 rules={[{ required: true, message: "외출 시간을 선택하세요" }]}
               >
@@ -228,12 +240,20 @@ export default function OutingAdd() {
                     format="YYYY-MM-DD HH:mm:ss"
                     placeholder="시작 시간"
                     style={{ width: "100%" }}
+                    value={duration.start}
+                    onChange={(value) =>
+                      setDuration((prev) => ({ ...prev, start: value }))
+                    }
                   />
                   <DatePicker
                     showTime
                     format="YYYY-MM-DD HH:mm:ss"
                     placeholder="종료 시간"
                     style={{ width: "100%" }}
+                    value={duration.end}
+                    onChange={(value) =>
+                      setDuration((prev) => ({ ...prev, end: value }))
+                    }
                   />
                 </Space>
               </Form.Item>
@@ -256,4 +276,15 @@ const Container = styled.div`
   margin: 0 auto;
   padding: 24px;
   overflow-y: auto;
+`;
+const AccentBtn = styled(Button)`
+  background-color: var(--core-status-accent) !important;
+  border-radius: 12px !important;
+  border: none;
+  padding: 16px 0;
+  height: 44px;
+
+  &:hover {
+    background-color: var(--core-status-accent_translucent) !important;
+  }
 `;
